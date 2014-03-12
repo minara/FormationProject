@@ -10,8 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.computerdatabase.dao.CompanyDAO;
+import com.excilys.computerdatabase.dao.ComputerDAO;
 import com.excilys.computerdatabase.dao.ConnectionManager;
 import com.excilys.computerdatabase.om.Company;
+import com.excilys.computerdatabase.om.Computer;
 
 /**
  * Servlet implementation class TestServlet
@@ -33,13 +35,20 @@ public class TestServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//Passing test on 12/03/2014 11:53 testing CompanyDAO Class
-		CompanyDAO companyDao=CompanyDAO.getInstance();
+		/*CompanyDAO companyDao=CompanyDAO.getInstance();
 		System.out.println("End of init");
 		List<Company> companies= companyDao.getAllCompanies();
 		System.out.println(companies);
 		System.out.println("End of 1st test");
 		companies=companyDao.getCompanies(30);
-		System.out.println(companies);
+		System.out.println(companies);*/
+		
+		ComputerDAO computerDAO=ComputerDAO.getInstance();
+		//List<Computer> computers=computerDAO.getAllComputers();
+		List<Computer> computers=computerDAO.getComputers(0,15);
+		System.out.println(computers);
+		computers=computerDAO.getComputers(15, 15);
+		System.out.println(computers);
 	}
 
 }
