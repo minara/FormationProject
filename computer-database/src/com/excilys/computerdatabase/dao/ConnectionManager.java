@@ -1,16 +1,19 @@
-package com.excilys.dbaccess;
+package com.excilys.computerdatabase.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class ComputerDAO {
-	private final static ComputerDAO dao= new ComputerDAO();
-	private Connection connection;
+public class ConnectionManager {
+	private final static ConnectionManager cm= new ConnectionManager();
+	private String driver="com.mysql.jdbc.Driver";
+	private String url="jdbc:mysql://localhost:3306/computer-database-db";
+	private String user="jee-cdb";
+	private String pwd="password";
 
-	public ComputerDAO() {
+	public ConnectionManager() {
 		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			Class.forName(driver).newInstance();
 			
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
@@ -24,13 +27,14 @@ public class ComputerDAO {
 		} 
 	}
 
-	public static ComputerDAO getDao() {
-		return dao;
+	public static ConnectionManager getInstance() {
+		return cm;
 	}
 
 	public Connection getConnection() {
+		Connection connection=null;
 		try {
-			this.connection=DriverManager.getConnection("jdbc:mysql://localhost:3306/computer-database-db","jee-cdb","password");
+			connection=DriverManager.getConnection(url,user,pwd);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

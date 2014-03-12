@@ -1,4 +1,4 @@
-package com.excilys.test;
+package com.excilys.computerdatabase.controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.dbaccess.CompanyQuery;
-import com.excilys.dbaccess.ComputerDAO;
-import com.excilys.om.Company;
+import com.excilys.computerdatabase.dao.CompanyDAO;
+import com.excilys.computerdatabase.dao.ConnectionManager;
+import com.excilys.computerdatabase.om.Company;
 
 /**
  * Servlet implementation class TestServlet
@@ -25,27 +25,21 @@ public class TestServlet extends HttpServlet {
      */
     public TestServlet() {
         super();
-        // TODO Auto-generated constructor stub
-        System.out.println("init");
+   
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		System.out.println("Starting tests");
-		System.out.println(ComputerDAO.getDao().getConnection()==null);
-		/*CompanyQuery company=CompanyQuery.getCq();
+		//Passing test on 12/03/2014 11:53 testing CompanyDAO Class
+		CompanyDAO companyDao=CompanyDAO.getInstance();
 		System.out.println("End of init");
-		List<Company> companies= company.getAllCompanies();
+		List<Company> companies= companyDao.getAllCompanies();
 		System.out.println(companies);
 		System.out.println("End of 1st test");
-		companies=company.getCompanies("id>10 AND id<20");
+		companies=companyDao.getCompanies(30);
 		System.out.println(companies);
-		companies=company.getCompanies("name LIKE \"Mic\"");
-		System.out.println(companies);
-		company.closeConnection();*/
 	}
 
 }

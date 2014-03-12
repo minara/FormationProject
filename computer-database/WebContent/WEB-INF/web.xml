@@ -6,7 +6,7 @@
 	<display-name>computer-database</display-name>
 	<servlet>
 		<servlet-name>TestServlet</servlet-name>
-		<servlet-class>com.excilys.test.TestServlet</servlet-class>
+		<servlet-class>com.excilys.computerdatabase.controller.TestServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>TestServlet</servlet-name>
