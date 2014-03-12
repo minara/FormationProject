@@ -1,25 +1,25 @@
 package com.excilys.computerdatabase.om;
 
-import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-
 
 
 public class Computer {
 	private long     id;
 	private String    name;
-	private Date introduced;
-	private Date discontinued;
+	private FrenchDate introduced;
+	private FrenchDate discontinued;
 	private Company company;
+	
 
 	public Computer() {
 	}
 	//TODO: use pattern builder instead?
-	public Computer(long id, String name, Date introduced, Date discontinued, Company company){
+	public Computer(long id, String name, FrenchDate introduced, FrenchDate discontinued, Company company){
 		this.id=id;
 		this.name=name;
-		this.introduced=introduced;
-		this.discontinued=discontinued;
+		this.introduced= introduced;
+		this.discontinued= discontinued;
 		this.company=company;
 	}
 
@@ -43,7 +43,7 @@ public class Computer {
 		return introduced;
 	}
 
-	public void setIntroduced(Date introduced) {
+	public void setIntroduced(FrenchDate introduced) {
 		this.introduced = introduced;
 	}
 
@@ -51,7 +51,7 @@ public class Computer {
 		return discontinued;
 	}
 
-	public void setDiscontinued(Date discontinued) {
+	public void setDiscontinued(FrenchDate discontinued) {
 		this.discontinued = discontinued;
 	}
 
@@ -66,7 +66,7 @@ public class Computer {
 	@Override
 	public String toString() {
 		return "Computer [id=" + id + ", name=" + name + ", introduced="
-				+ introduced + ", discontinued=" + discontinued + ", company="
+				+ introduced + ", discontinued=" + discontinued +", company="
 				+ company.getName() + "]";
 	}
 
