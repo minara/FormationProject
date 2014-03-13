@@ -40,7 +40,7 @@ public class DashboardServlet extends HttpServlet {
 		
 		if(name==null || name.length()==0){
 			nbComputer=computerDAO.countComputers();
-			computers=computerDAO.getComputers(0,20);
+			computers=computerDAO.getAllComputers();
 		}else{
 			nbComputer=computerDAO.countComputers("%"+name+"%");
 			computers=computerDAO.getComputers("%"+name+"%");

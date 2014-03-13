@@ -8,11 +8,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.computerdatabase.om.Company;
 
 public class CompanyDAO {
 	private final static CompanyDAO cd=new CompanyDAO();
 	private ConnectionManager cm;
+	final Logger logger= LoggerFactory.getLogger(CompanyDAO.class);
 
 	private CompanyDAO() {
 		cm=ConnectionManager.getInstance();
@@ -42,7 +46,9 @@ public class CompanyDAO {
 			if(cn !=null)
 				cn.close();
 			
-		} catch (SQLException e) {}
+		} catch (SQLException e) {
+			logger.debug("SQLException while closing connections in CompanyDAO");
+		}
 	}
 	
 	public List<Company> getAllCompanies(){
@@ -51,6 +57,7 @@ public class CompanyDAO {
 		PreparedStatement statement=null;
 		ResultSet results=null;
 		
+		logger.info("Creating full list of companies");
 		try {
 			connection=cm.getConnection();
 			statement=connection.prepareStatement("SELECT id, name FROM company;");
@@ -59,7 +66,7 @@ public class CompanyDAO {
 				companies.add(this.createCompany(results));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			logger.debug("SQLException while listing all companies");
 			e.printStackTrace();
 		}finally {
 			closeConnections(results, statement, connection);
@@ -74,6 +81,7 @@ public class CompanyDAO {
 		PreparedStatement statement=null;
 		ResultSet results=null;
 		
+		logger.info("Creating partial list of companies");
 		try {
 			connection=cm.getConnection();
 			statement=connection.prepareStatement("SELECT id, name FROM company WHERE id>?;");
@@ -83,7 +91,7 @@ public class CompanyDAO {
 				companies.add(this.createCompany(results));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			logger.debug("SQLException while listing companies from index"+minId);
 			e.printStackTrace();
 		}finally {
 			closeConnections(results, statement, connection);

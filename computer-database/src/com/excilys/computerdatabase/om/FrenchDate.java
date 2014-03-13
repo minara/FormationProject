@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class FrenchDate extends Date {
-	private SimpleDateFormat dateFormat=new SimpleDateFormat("dd/MM/yyyy");
+	private SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
 
 	public FrenchDate() {
 	}
@@ -13,9 +13,8 @@ public class FrenchDate extends Date {
 		super(date);
 	}
 	
-	@SuppressWarnings("deprecation")
 	public FrenchDate(Date date){
-		super(date.getDate());
+		super(date.getTime());
 	}
 
 	@SuppressWarnings("unused")
