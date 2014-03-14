@@ -25,6 +25,7 @@ public class ModifyServlet extends HttpServlet {
 	private ComputerDAO computerDAO;
 	private long id;
 	private Computer computer;
+	private String search;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -40,8 +41,8 @@ public class ModifyServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		List<Company> companies=new ArrayList<Company>();
-		
-		id=Long.parseLong(request.getParameter("modify"));
+		id=Long.parseLong(request.getParameter("computerId"));
+		search=request.getParameter("search");
 		
 		companies=companyDAO.getAllCompanies();
 		computer=computerDAO.getComputer(id);
@@ -61,7 +62,11 @@ public class ModifyServlet extends HttpServlet {
 		System.out.println(name+" "+introduced+" "+discontinued+" "+companyId);
 					
 		computerDAO.editComputer(id, name, introduced, discontinued, companyId);
-		response.sendRedirect("DashboardServlet");
+		if(search==null||search.length()==0)
+			response.sendRedirect("DashboardServlet");
+		else{
+			response.sendRedirect("DashboardServlet?search="+search);
+		}
 	}
 
 }

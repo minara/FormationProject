@@ -19,6 +19,7 @@ import com.excilys.computerdatabase.om.Computer;
 public class DashboardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private ComputerDAO computerDAO;
+	private String searchDomain="0";
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -35,19 +36,34 @@ public class DashboardServlet extends HttpServlet {
 		int nbComputer;
 		List<Computer> computers;
 		String name=request.getParameter("search");
-		//int page=request.getParameter("page");
-
+		boolean delete;
 		
+
+		if(request.getParameter("delete")!=null)
+			delete=Boolean.parseBoolean(request.getParameter("delete"));
+		else delete=false;
+
+		if(delete==true){
+			long computerId=Long.parseLong(request.getParameter("computerId"));
+			computerDAO.delete(computerId);
+		}
 		if(name==null || name.length()==0){
 			nbComputer=computerDAO.countComputers();
 			computers=computerDAO.getAllComputers();
 		}else{
-			nbComputer=computerDAO.countComputers("%"+name+"%");
-			computers=computerDAO.getComputers("%"+name+"%");
+			searchDomain=request.getParameter("searchDomain");
+			if(searchDomain.equals("0")){
+				nbComputer=computerDAO.countComputers("%"+name+"%");
+				computers=computerDAO.getComputers("%"+name+"%");
+			}else{
+				nbComputer=computerDAO.countComputersByCompany("%"+name+"%");
+				computers=computerDAO.getComputersByCompany("%"+name+"%");
+			}
 		}
 		request.setAttribute("name", name);
 		request.setAttribute("nbComputer", nbComputer);
 		request.setAttribute("computers", computers);
+		request.setAttribute("domain", Integer.parseInt(searchDomain));
 		request.getRequestDispatcher("WEB-INF/dashboard.jsp").forward(request, response);
 	}
 

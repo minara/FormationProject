@@ -6,8 +6,12 @@
 	<div id="actions">
 		<form action="" method="GET">
 			<input type="search" id="searchbox" name="search" value="${name}"
-				placeholder="Search name"> <input type="submit"
-				id="searchsubmit" value="Filter by name" class="btn primary">
+				placeholder="Search name" data-validation="alphanumeric" data-validation-allowing="-_/." data-validation-optional="true" > 
+			<input type="submit" id="searchsubmit" value="Filter by name" class="btn primary">
+			<select name="searchDomain">
+				<option value="0" ${domain==0 ? 'selected' : ''}>Computer</option>
+				<option value="1" ${domain==1 ? 'selected' : ''}>Company</option>
+			</select>
 		</form>
 
 		<a class="btn success" id="add" href="AddComputerServlet">Add
@@ -26,26 +30,36 @@
 				<th>Discontinued Date</th>
 				<!-- Table header for Company -->
 				<th>Company</th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
 			<c:forEach var="computer" items="${computers}">
 				<tr>
 					<td class="col1">
-						<form action="ModifyServlet" method="GET">
-							<input type="hidden" name="modify" value="${computer.id}"> 
-							<input type="image" src="image/boutonplume.jpg" style="height:25px; width:25px" >
-						</form>
+						<a href="ModifyServlet?computerId=${computer.id}&search=${name}">
+							<img alt="Edit" src="image/boutonplume.jpg" style="height:25px; width:25px">
+						</a>
 					</td>
 					<td>${computer.name}</td>
 					<td>${computer.introduced}</td>
 					<td>${computer.discontinued}</td>
 					<td>${computer.company.name}</td>
+					<td>
+						<a href="DashboardServlet?computerId=${computer.id}&delete=true&search=${name}">
+							<img alt="Delete" src="image/boutondelete.jpg" style="height:25px; width:25px">
+						</a>
+					</td>
 				</tr>
 			</c:forEach>
 
 		</tbody>
 	</table>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>
+	<script>
+	$.validate();
+	</script>
 </section>
 
 <jsp:include page="include/footer.jsp" />

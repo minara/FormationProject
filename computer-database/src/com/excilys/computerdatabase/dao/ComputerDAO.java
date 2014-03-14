@@ -154,13 +154,39 @@ public class ComputerDAO {
 		return computers;
 	}
 	
+	public List<Computer> getComputersByCompany(String name){
+		Connection connection=null;
+		ArrayList<Computer> computers=new ArrayList<Computer>();
+		PreparedStatement statement=null;
+		ResultSet results=null;
+		
+		logger.info("Selecting computers according to company name");
+		try {
+			connection=cm.getConnection();
+			statement=connection.prepareStatement("SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct "
+					+ "JOIN company AS cn ON ct.company_id=cn.id WHERE cn.name LIKE ?;");
+			statement.setString(1, name);
+			results=statement.executeQuery();
+			while(results.next()){
+				computers.add(this.createComputer(results));
+			}
+		} catch (SQLException e) {
+			logger.debug("SQLException while trying to search computers by company name");
+			e.printStackTrace();
+		}finally {
+			closeConnections(results, statement, connection);
+		}
+
+		return computers;
+	}
+	
 	public Computer getComputer(long id){
 		Connection connection=null;
 		Computer computer=null;
 		PreparedStatement statement=null;
 		ResultSet results=null;
 		
-		logger.info("Selecting computers according to name");
+		logger.info("Selecting computer n°"+id);
 		try {
 			connection=cm.getConnection();
 			statement=connection.prepareStatement("SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct "
@@ -171,7 +197,7 @@ public class ComputerDAO {
 				computer=this.createComputer(results);
 			}
 		} catch (SQLException e) {
-			logger.debug("SQLException while trying to search computers by name");
+			logger.debug("SQLException while trying to search computer based on id");
 			e.printStackTrace();
 		}finally {
 			closeConnections(results, statement, connection);
@@ -201,6 +227,7 @@ public class ComputerDAO {
 		}
 		return nb;
 	}
+	
 	public int countComputers(String name) {
 		Connection connection=null;
 		PreparedStatement statement=null;
@@ -224,10 +251,32 @@ public class ComputerDAO {
 		return nb;
 	}
 	
-	public void addComputer(String name, String introduced, String discontinued, String id){
+	public int countComputersByCompany(String name) {
 		Connection connection=null;
 		PreparedStatement statement=null;
 		ResultSet results=null;
+		int nb=0;
+		
+		logger.info("Counting computers from search by name");
+		try {
+			connection=cm.getConnection();
+			statement=connection.prepareStatement("SELECT COUNT(ct.id) FROM computer AS ct JOIN company AS cn ON ct.company_id=cn.id ct Where cn.name LIKE ?;");
+			statement.setString(1, name);
+			results=statement.executeQuery();
+			if(results.next())
+			  nb=results.getInt(1);
+		} catch (SQLException e) {
+			logger.debug("SQLException while trying to count computers chosen by name");
+			e.printStackTrace();
+		}finally {
+			closeConnections(results, statement, connection);
+		}
+		return nb;
+	}
+	
+	public void addComputer(String name, String introduced, String discontinued, String id){
+		Connection connection=null;
+		PreparedStatement statement=null;
 		
 		logger.info("Adding a new computer");
 		try {
@@ -252,7 +301,7 @@ public class ComputerDAO {
 			logger.debug("SQLException while adding computer");
 			e.printStackTrace();
 		}finally {
-			closeConnections(results, statement, connection);
+			closeConnections(null, statement, connection);
 		}
 		
 		
@@ -261,7 +310,6 @@ public class ComputerDAO {
 	public void editComputer(long id,String name, String introduced, String discontinued, String companyId){
 		Connection connection=null;
 		PreparedStatement statement=null;
-		ResultSet results=null;
 		
 		logger.info("Editing computer n°"+id);
 		try {
@@ -287,9 +335,28 @@ public class ComputerDAO {
 			logger.debug("SQLException while editing computer");
 			e.printStackTrace();
 		}finally {
-			closeConnections(results, statement, connection);
+			closeConnections(null, statement, connection);
 		}
 		
+		
+	}
+
+	public void delete(long computerId) {
+		Connection connection=null;
+		PreparedStatement statement=null;
+		
+		logger.info("Deleting computer n°"+computerId);
+		try {
+			connection=cm.getConnection();
+			statement=connection.prepareStatement("DELETE FROM computer WHERE id=?;");
+			statement.setLong(1,computerId);
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			logger.debug("SQLException while deleting computer");
+			e.printStackTrace();
+		}finally {
+			closeConnections(null, statement, connection);
+		}
 		
 	}
 
