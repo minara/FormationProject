@@ -10,7 +10,7 @@
 			<div class="clearfix">
 				<label for="name">Computer name:</label>
 				<div class="input">
-					<input type="text" name="name" value="${computer.name}" data-validation="alphanumeric" data-validation-allowing="-_/."/>
+					<input type="text" name="name" value="${computer.name}" data-validation="alphanumeric" data-validation-allowing=" -_/."/>
 					<span class="help-inline">Required</span>
 				</div>
 			</div>
@@ -43,7 +43,7 @@
 		</fieldset>
 		<div class="actions">
 			<input type="submit" value="Edit" class="btn primary">
-			or <a href="DashboardServlet" class="btn">Cancel</a>
+			or <a href="DashboardServlet?search=${search}" class="btn">Cancel</a>
 		</div>
 	</form>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>

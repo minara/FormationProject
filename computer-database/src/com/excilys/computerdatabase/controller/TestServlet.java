@@ -44,12 +44,12 @@ public class TestServlet extends HttpServlet {
 		System.out.println(companies);*/
 		
 		//Test passing on 12/03/2014 testing ComputerDAO class
-		ComputerDAO computerDAO=ComputerDAO.getInstance();
+		//ComputerDAO computerDAO=ComputerDAO.getInstance();
 		//List<Computer> computers=computerDAO.getAllComputers();
-		List<Computer> computers=computerDAO.getComputers(0,15);
+		/*List<Computer> computers=computerDAO.getComputers(0,15);
 		System.out.println(computers);
 		computers=computerDAO.getComputers(15, 15);
-		System.out.println(computers);
+		System.out.println(computers);*/
 	}
 
 }

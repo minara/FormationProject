@@ -48,6 +48,7 @@ public class ModifyServlet extends HttpServlet {
 		computer=computerDAO.getComputer(id);
 		request.setAttribute("companies", companies);
 		request.setAttribute("computer", computer);
+		request.setAttribute("search", search);
 		request.getRequestDispatcher("WEB-INF/editComputer.jsp").forward(request, response);
 	}
 

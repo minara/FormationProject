@@ -10,7 +10,7 @@
 			<div class="clearfix">
 				<label for="name">Computer name:</label>
 				<div class="input">
-					<input type="text" name="name" data-validation="alphanumeric" data-validation-allowing="-_/." />
+					<input type="text" name="name" data-validation="alphanumeric" data-validation-allowing=" -_/." />
 					<span class="help-inline">Required</span>
 				</div>
 			</div>

@@ -1,12 +1,13 @@
 <jsp:include page="include/header.jsp" />
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="p" tagdir="/WEB-INF/tags"%>
 
 <section id="main">
-	<h1 id="homeTitle">${nbComputer} Computers found</h1>
+	<h1 id="homeTitle">${count} Computers found</h1>
 	<div id="actions">
 		<form action="" method="GET">
 			<input type="search" id="searchbox" name="search" value="${name}"
-				placeholder="Search name" data-validation="alphanumeric" data-validation-allowing="-_/." data-validation-optional="true" > 
+				placeholder="Search name" data-validation="alphanumeric" data-validation-allowing=" -_/." data-validation-optional="true" > 
 			<input type="submit" id="searchsubmit" value="Filter by name" class="btn primary">
 			<select name="searchDomain">
 				<option value="0" ${domain==0 ? 'selected' : ''}>Computer</option>
@@ -24,12 +25,28 @@
 				<!-- Variable declarations for passing labels as parameters -->
 				<th></th>
 				<!-- Table header for Computer Name -->
-				<th>Computer Name</th>
-				<th>Introduced Date</th>
+				<th>Computer Name
+					<a href="DashboardServlet?order=name&search=${name}">
+							<img alt="^" src="${nameSrc}" style="height:15px; width:15px">
+						</a>
+				</th>
+				<th>Introduced Date
+					<a href="DashboardServlet?order=introduced&search=${name}">
+							<img alt="^" src="${introSrc}" style="height:15px; width:15px">
+						</a>
+				</th>
 				<!-- Table header for Discontinued Date -->
-				<th>Discontinued Date</th>
+				<th>Discontinued Date
+					<a href="DashboardServlet?order=discontinued&search=${name}">
+							<img alt="^" src="${discoSrc}" style="height:15px; width:15px">
+						</a>
+				</th>
 				<!-- Table header for Company -->
-				<th>Company</th>
+				<th>Company
+					<a href="DashboardServlet?order=company&search=${name}">
+							<img alt="^" src="${compSrc}" style="height:15px; width:15px">
+						</a>
+				</th>
 				<th></th>
 			</tr>
 		</thead>
@@ -55,6 +72,9 @@
 
 		</tbody>
 	</table>
+	
+	<p:pager pageNumber="${pageNumber}" lastPage="${lastPage}" perPage="${perPage}" search="${name}"/>
+	
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>
 	<script>

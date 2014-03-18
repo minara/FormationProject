@@ -75,18 +75,101 @@ public class ComputerDAO {
 		c.getCompany().setName(rs.getString(6));
 		return c;
 	}
-
-	public List<Computer> getAllComputers(){
+	
+	public void count(SearchComputersWrapper wrapper){
 		Connection connection=null;
-		ArrayList<Computer> computers=new ArrayList<Computer>();
 		PreparedStatement statement=null;
 		ResultSet results=null;
-
-		logger.info("Creating full list of computers");
+		String name=wrapper.getName();
+		int nb=0;
+		
+		logger.info("Counting computers");
 		try {
 			connection=cm.getConnection();
-			statement=connection.prepareStatement("SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct LEFT OUTER JOIN company AS cn "
-					+ "ON ct.company_id=cn.id ;");
+			if(name==null||name.length()==0){
+				statement=connection.prepareStatement("SELECT COUNT(id) FROM computer;");
+			}else{
+				if(wrapper.getSearchDomain()==1){
+					statement=connection.prepareStatement("SELECT COUNT(ct.id) FROM computer AS ct JOIN company AS cn ON ct.company_id=cn.id Where cn.name LIKE ?;");
+				}else{
+					statement=connection.prepareStatement("SELECT COUNT(id) FROM computer Where name LIKE ?;");
+				}
+				statement.setString(1, "%"+name+"%");
+			}
+			results=statement.executeQuery();
+			if(results.next())
+			  nb=results.getInt(1);
+		} catch (SQLException e) {
+			logger.debug("SQLException while trying to count computers");
+			e.printStackTrace();
+		}finally {
+			closeConnections(results, statement, connection);
+		}
+		wrapper.setCount(nb);
+	}
+	
+	public void getList(SearchComputersWrapper wrapper){
+		Connection connection=null;
+		ArrayList<Computer> computers=new ArrayList<Computer>(wrapper.getLimit());
+		PreparedStatement statement=null;
+		ResultSet results=null;
+		String name=wrapper.getName();
+		int ord=1;
+		String asc;
+
+		logger.info("Creating list of computers");
+		
+		switch(wrapper.getOrder()){
+		case NAME:
+			ord=2;
+			break;
+		case INTRODUCED:
+			ord=3;
+			break;
+		case DISCONTINUED:
+			ord=4;
+			break;
+		case COMPANY:
+			ord=6;
+			break;
+		}
+		if(wrapper.isAsc())
+			asc="ASC";
+		else
+			asc="DESC";
+		
+		try {
+			connection=cm.getConnection();
+			if(name==null||name.length()==0){
+				statement=connection.prepareStatement("SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct "
+						+ "LEFT OUTER JOIN company AS cn ON ct.company_id=cn.id ORDER BY ? "+asc+" LIMIT ?,?;");
+				statement.setInt(1,ord);
+				if (wrapper.getStart()<0)
+					statement.setNull(2, Types.INTEGER);
+				else
+					statement.setInt(2,wrapper.getStart());
+				if(wrapper.getLimit()<0)
+					statement.setNull(3, Types.INTEGER);
+				else
+					statement.setInt(3,wrapper.getLimit());
+			}else{
+				if(wrapper.getSearchDomain()==1)
+					statement=connection.prepareStatement("SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct "
+							+ "JOIN company AS cn ON ct.company_id=cn.id WHERE cn.name LIKE ? ORDER BY ? "+asc+" LIMIT ?,?;");
+				else
+					statement=connection.prepareStatement("SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct "
+							+ "LEFT OUTER JOIN company AS cn ON ct.company_id=cn.id WHERE ct.name LIKE ? ORDER BY ? "+asc+" LIMIT ?,?;");
+				statement.setString(1, "%"+name+"%");
+				statement.setInt(2, ord);
+				if (wrapper.getStart()<0)
+					statement.setNull(3, Types.INTEGER);
+				else
+					statement.setInt(3,wrapper.getStart());
+				if(wrapper.getLimit()<0)
+					statement.setNull(4, Types.INTEGER);
+				else
+					statement.setInt(4,wrapper.getLimit());
+			}
 			results=statement.executeQuery();
 			while(results.next()){
 				computers.add(this.createComputer(results));
@@ -98,88 +181,9 @@ public class ComputerDAO {
 			closeConnections(results, statement, connection);
 		}
 
-		return computers;
+		wrapper.setComputers(computers);
 	}
 
-	public List<Computer> getComputers(int fromIndex, int listSize){
-		Connection connection=null;
-		ArrayList<Computer> computers=new ArrayList<Computer>(listSize);
-		PreparedStatement statement=null;
-		ResultSet results=null;
-
-		logger.info("Creating partial list of computers");
-		try {
-			connection=cm.getConnection();
-			statement=connection.prepareStatement("SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct "
-					+ "LEFT OUTER JOIN company AS cn ON ct.company_id=cn.id LIMIT ?,?;");
-			statement.setInt(1, fromIndex);
-			statement.setInt(2,listSize);
-			results=statement.executeQuery();
-			while(results.next()){
-				computers.add(this.createComputer(results));
-			}
-		} catch (SQLException e) {
-			logger.debug("SQLException while trying to list a group of computers");
-			e.printStackTrace();
-		}finally {
-			closeConnections(results, statement, connection);
-		}
-
-		return computers;
-	}
-	
-	public List<Computer> getComputers(String name){
-		Connection connection=null;
-		ArrayList<Computer> computers=new ArrayList<Computer>();
-		PreparedStatement statement=null;
-		ResultSet results=null;
-		
-		logger.info("Selecting computers according to name");
-		try {
-			connection=cm.getConnection();
-			statement=connection.prepareStatement("SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct "
-					+ "LEFT OUTER JOIN company AS cn ON ct.company_id=cn.id WHERE ct.name LIKE ?;");
-			statement.setString(1, name);
-			results=statement.executeQuery();
-			while(results.next()){
-				computers.add(this.createComputer(results));
-			}
-		} catch (SQLException e) {
-			logger.debug("SQLException while trying to search computers by name");
-			e.printStackTrace();
-		}finally {
-			closeConnections(results, statement, connection);
-		}
-
-		return computers;
-	}
-	
-	public List<Computer> getComputersByCompany(String name){
-		Connection connection=null;
-		ArrayList<Computer> computers=new ArrayList<Computer>();
-		PreparedStatement statement=null;
-		ResultSet results=null;
-		
-		logger.info("Selecting computers according to company name");
-		try {
-			connection=cm.getConnection();
-			statement=connection.prepareStatement("SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct "
-					+ "JOIN company AS cn ON ct.company_id=cn.id WHERE cn.name LIKE ?;");
-			statement.setString(1, name);
-			results=statement.executeQuery();
-			while(results.next()){
-				computers.add(this.createComputer(results));
-			}
-		} catch (SQLException e) {
-			logger.debug("SQLException while trying to search computers by company name");
-			e.printStackTrace();
-		}finally {
-			closeConnections(results, statement, connection);
-		}
-
-		return computers;
-	}
-	
 	public Computer getComputer(long id){
 		Connection connection=null;
 		Computer computer=null;
@@ -204,74 +208,6 @@ public class ComputerDAO {
 		}
 
 		return computer;
-	}
-
-	public int countComputers() {
-		Connection connection=null;
-		PreparedStatement statement=null;
-		ResultSet results=null;
-		int nb=0;
-		
-		logger.info("Counting all computers");
-		try {
-			connection=cm.getConnection();
-			statement=connection.prepareStatement("SELECT COUNT(id) FROM computer;");
-			results=statement.executeQuery();
-			if(results.next())
-			  nb=results.getInt(1);
-		} catch (SQLException e) {
-			logger.debug("SQLException while trying to count all computers");
-			e.printStackTrace();
-		}finally {
-			closeConnections(results, statement, connection);
-		}
-		return nb;
-	}
-	
-	public int countComputers(String name) {
-		Connection connection=null;
-		PreparedStatement statement=null;
-		ResultSet results=null;
-		int nb=0;
-		
-		logger.info("Counting computers from search by name");
-		try {
-			connection=cm.getConnection();
-			statement=connection.prepareStatement("SELECT COUNT(id) FROM computer Where name LIKE ?;");
-			statement.setString(1, name);
-			results=statement.executeQuery();
-			if(results.next())
-			  nb=results.getInt(1);
-		} catch (SQLException e) {
-			logger.debug("SQLException while trying to count computers chosen by name");
-			e.printStackTrace();
-		}finally {
-			closeConnections(results, statement, connection);
-		}
-		return nb;
-	}
-	
-	public int countComputersByCompany(String name) {
-		Connection connection=null;
-		PreparedStatement statement=null;
-		ResultSet results=null;
-		int nb=0;
-		
-		logger.info("Counting computers from search by name");
-		try {
-			connection=cm.getConnection();
-			statement=connection.prepareStatement("SELECT COUNT(ct.id) FROM computer AS ct JOIN company AS cn ON ct.company_id=cn.id ct Where cn.name LIKE ?;");
-			statement.setString(1, name);
-			results=statement.executeQuery();
-			if(results.next())
-			  nb=results.getInt(1);
-		} catch (SQLException e) {
-			logger.debug("SQLException while trying to count computers chosen by name");
-			e.printStackTrace();
-		}finally {
-			closeConnections(results, statement, connection);
-		}
-		return nb;
 	}
 	
 	public void addComputer(String name, String introduced, String discontinued, String id){
