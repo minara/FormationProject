@@ -1,5 +1,6 @@
 package com.excilys.computerdatabase.om;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -16,6 +17,7 @@ public class FrenchDate extends Date {
 	public FrenchDate(Date date){
 		super(date.getTime());
 	}
+	
 
 	@SuppressWarnings("unused")
 	@Override

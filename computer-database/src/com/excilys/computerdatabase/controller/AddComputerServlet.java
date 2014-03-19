@@ -1,6 +1,8 @@
 package com.excilys.computerdatabase.controller;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.computerdatabase.dao.CompanyDAO;
+import com.excilys.computerdatabase.dao.CompanyService;
 import com.excilys.computerdatabase.dao.ComputerDAO;
+import com.excilys.computerdatabase.dao.ComputerService;
+import com.excilys.computerdatabase.dao.UpdateComputerWrapper;
 import com.excilys.computerdatabase.om.Company;
+import com.excilys.computerdatabase.om.FrenchDate;
 
 /**
  * Servlet implementation class AddComputerServlet
@@ -20,16 +26,16 @@ import com.excilys.computerdatabase.om.Company;
 @WebServlet("/AddComputerServlet")
 public class AddComputerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private CompanyDAO companyDAO;
-	private ComputerDAO computerDAO;
+	private CompanyService companyService;
+	private ComputerService computerService;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
     public AddComputerServlet() {
         super();
-        companyDAO= CompanyDAO.getInstance();
-        computerDAO=ComputerDAO.getInstance();
+        companyService= CompanyService.getInstance();
+        computerService=ComputerService.getInstance();
     }
 
 	/**
@@ -37,7 +43,7 @@ public class AddComputerServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		List<Company> companies=new ArrayList<Company>();
-		companies=companyDAO.getAllCompanies();
+		companies=companyService.getCompanies();
 		request.setAttribute("companies", companies);
 		request.getRequestDispatcher("WEB-INF/addComputer.jsp").forward(request, response);
 	}
@@ -46,12 +52,26 @@ public class AddComputerServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String name=request.getParameter("name");
-		String introduced=request.getParameter("introducedDate");
-		String discontinued=request.getParameter("discontinuedDate");
-		String id=request.getParameterValues("company")[0];
-		System.out.println(name+" "+introduced+" "+discontinued+" "+id);
-		computerDAO.addComputer(name, introduced, discontinued, id);
+		UpdateComputerWrapper wrapper=new UpdateComputerWrapper();
+		wrapper.setName(request.getParameter("name"));
+		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+		if(request.getParameter("introducedDate")!=null&&request.getParameter("introducedDate")!="")
+			try {
+				wrapper.setIntroduced(new FrenchDate(format.parse(request.getParameter("introducedDate"))));
+			} catch (ParseException e) {
+				//ignore
+			}
+		if(request.getParameter("discontinuedDate")!=null&&request.getParameter("discontinuedDate")!="")
+			try {
+				wrapper.setDiscontinued(new FrenchDate(format.parse(request.getParameter("discontinuedDate"))));
+			} catch (ParseException e) {
+				//ignore
+			}
+		if(request.getParameter("company")!=null)
+			wrapper.setCompanyId(Long.parseLong(request.getParameter("company")));
+		//System.out.println(name+" "+introduced+" "+discontinued+" "+id);
+		
+		computerService.add(wrapper);
 		response.sendRedirect("DashboardServlet");
 		
 	}

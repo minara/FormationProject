@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.computerdatabase.dao.ComputerDAO;
+import com.excilys.computerdatabase.dao.ComputerService;
 import com.excilys.computerdatabase.dao.Order;
 import com.excilys.computerdatabase.dao.SearchComputersWrapper;
 import com.excilys.computerdatabase.om.Computer;
@@ -20,7 +21,7 @@ import com.excilys.computerdatabase.om.Computer;
 @WebServlet("/DashboardServlet")
 public class DashboardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private ComputerDAO computerDAO;
+	private ComputerService computerService;
 	private int searchDomain=0, limit=10, page=1;
 	private Order order=Order.NAME;
 	private boolean asc=true;
@@ -30,7 +31,7 @@ public class DashboardServlet extends HttpServlet {
 	 */
 	public DashboardServlet() {
 		super();
-		computerDAO=ComputerDAO.getInstance();
+		computerService=ComputerService.getInstance();
 	}
 
 	/**
@@ -51,7 +52,7 @@ public class DashboardServlet extends HttpServlet {
 
 		if(delete==true){
 			long computerId=Long.parseLong(request.getParameter("computerId"));
-			computerDAO.delete(computerId);
+			computerService.delete(computerId);
 		}
 
 		name=request.getParameter("search");
@@ -61,7 +62,7 @@ public class DashboardServlet extends HttpServlet {
 			searchDomain=Integer.parseInt(request.getParameter("searchDomain"));
 		wrapper.setSearchDomain(searchDomain);
 
-		computerDAO.count(wrapper);
+		computerService.count(wrapper);
 		count=wrapper.getCount();
 
 		if(request.getParameterValues("limitation")!=null)
@@ -118,7 +119,7 @@ public class DashboardServlet extends HttpServlet {
 		}
 		wrapper.setAsc(asc);
 
-		computerDAO.getList(wrapper);
+		computerService.search(wrapper);
 		computers=wrapper.getComputers();
 
 		request.setAttribute("name", name);

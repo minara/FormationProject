@@ -34,8 +34,8 @@
 				<div class="input">
 					<select name="company">
 						<option value="0">--</option>
-						<c:forEach var="company" items="${companies}">
-							<option value="${company.id}" ${computer.company==company ? 'selected' : ''}>${company.name}</option>
+						<c:forEach var="comp" items="${companies}">
+							<option value="${comp.id}" ${computer.company==comp ? 'selected' : ''}>${comp.name}</option>
 						</c:forEach>
 					</select>
 				</div>

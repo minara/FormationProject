@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,18 +21,16 @@ import com.excilys.computerdatabase.om.FrenchDate;
 
 public class ComputerDAO {
 	private final static ComputerDAO cd=new ComputerDAO();
-	private ConnectionManager cm;
 	final Logger logger=LoggerFactory.getLogger(ComputerDAO.class);
 
 	private ComputerDAO() {
-		cm=ConnectionManager.getInstance();
 	}
 
 	public static ComputerDAO getInstance() {
 		return cd;
 	}
 
-	private void closeConnections(ResultSet rs, Statement stmt, Connection cn){
+	private void closeObjects(ResultSet rs, Statement stmt){
 		try {
 			if (rs != null)
 
@@ -40,10 +39,7 @@ public class ComputerDAO {
 			if (stmt != null)
 
 				stmt.close();
-
-			if(cn !=null)
-				cn.close();
-
+			
 		} catch (SQLException e) {
 			logger.debug("SQLException while closing connection to database in ComputerDAO");
 		}
@@ -76,8 +72,7 @@ public class ComputerDAO {
 		return c;
 	}
 	
-	public void count(SearchComputersWrapper wrapper){
-		Connection connection=null;
+	public void count(Connection connection, SearchComputersWrapper wrapper) throws SQLException{
 		PreparedStatement statement=null;
 		ResultSet results=null;
 		String name=wrapper.getName();
@@ -85,7 +80,7 @@ public class ComputerDAO {
 		
 		logger.info("Counting computers");
 		try {
-			connection=cm.getConnection();
+			//connection=cm.getConnection();
 			if(name==null||name.length()==0){
 				statement=connection.prepareStatement("SELECT COUNT(id) FROM computer;");
 			}else{
@@ -101,15 +96,14 @@ public class ComputerDAO {
 			  nb=results.getInt(1);
 		} catch (SQLException e) {
 			logger.debug("SQLException while trying to count computers");
-			e.printStackTrace();
+			throw e;
 		}finally {
-			closeConnections(results, statement, connection);
+			closeObjects(results, statement);
 		}
 		wrapper.setCount(nb);
 	}
 	
-	public void getList(SearchComputersWrapper wrapper){
-		Connection connection=null;
+	public void getList(Connection connection, SearchComputersWrapper wrapper) throws SQLException{
 		ArrayList<Computer> computers=new ArrayList<Computer>(wrapper.getLimit());
 		PreparedStatement statement=null;
 		ResultSet results=null;
@@ -139,7 +133,6 @@ public class ComputerDAO {
 			asc="DESC";
 		
 		try {
-			connection=cm.getConnection();
 			if(name==null||name.length()==0){
 				statement=connection.prepareStatement("SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct "
 						+ "LEFT OUTER JOIN company AS cn ON ct.company_id=cn.id ORDER BY ? "+asc+" LIMIT ?,?;");
@@ -176,23 +169,21 @@ public class ComputerDAO {
 			}
 		} catch (SQLException e) {
 			logger.debug("SQLException while trying to list all computers");
-			e.printStackTrace();
+			throw e;
 		}finally {
-			closeConnections(results, statement, connection);
+			closeObjects(results, statement);
 		}
 
 		wrapper.setComputers(computers);
 	}
 
-	public Computer getComputer(long id){
-		Connection connection=null;
+	public Computer getComputer(Connection connection, long id) throws SQLException{
 		Computer computer=null;
 		PreparedStatement statement=null;
 		ResultSet results=null;
 		
 		logger.info("Selecting computer n°"+id);
 		try {
-			connection=cm.getConnection();
 			statement=connection.prepareStatement("SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct "
 					+ "LEFT OUTER JOIN company AS cn ON ct.company_id=cn.id WHERE ct.id=?;");
 			statement.setLong(1, id);
@@ -202,96 +193,90 @@ public class ComputerDAO {
 			}
 		} catch (SQLException e) {
 			logger.debug("SQLException while trying to search computer based on id");
-			e.printStackTrace();
+			throw e;
 		}finally {
-			closeConnections(results, statement, connection);
+			closeObjects(results, statement);
 		}
 
 		return computer;
 	}
 	
-	public void addComputer(String name, String introduced, String discontinued, String id){
-		Connection connection=null;
+	public void add(Connection connection, UpdateComputerWrapper wrapper) throws SQLException{
 		PreparedStatement statement=null;
 		
 		logger.info("Adding a new computer");
 		try {
-			connection=cm.getConnection();
 			statement=connection.prepareStatement("INSERT INTO computer(id, name, introduced, discontinued, company_id)"
 					+ "VALUES(0,?,?,?,?);");
-			statement.setString(1, name);
-			if(introduced==null||introduced=="")
+			statement.setString(1, wrapper.getName());
+			if(wrapper.getIntroduced()==null)
 				statement.setNull(2, Types.TIMESTAMP);
 			else
-				statement.setString(2, introduced);
-			if(discontinued==null||discontinued=="")
+				statement.setTimestamp(2,new Timestamp(wrapper.getIntroduced().getTime()));
+			if(wrapper.getDiscontinued()==null)
 				statement.setNull(3, Types.TIMESTAMP);
 			else
-				statement.setString(3, discontinued);
-			if(id.equals("0"))
+				statement.setTimestamp(3, new Timestamp(wrapper.getDiscontinued().getTime()));
+			if(wrapper.getCompanyId()<1)
 				statement.setNull(4, Types.INTEGER);
 			else
-				statement.setString(4, id);
+				statement.setLong(4, wrapper.getCompanyId());
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			logger.debug("SQLException while adding computer");
-			e.printStackTrace();
+			throw e;
 		}finally {
-			closeConnections(null, statement, connection);
+			closeObjects(null, statement);
 		}
 		
 		
 	}
 	
-	public void editComputer(long id,String name, String introduced, String discontinued, String companyId){
-		Connection connection=null;
+	public void edit(Connection connection, UpdateComputerWrapper wrapper) throws SQLException{
 		PreparedStatement statement=null;
 		
-		logger.info("Editing computer n°"+id);
+		logger.info("Editing computer n°"+wrapper.getId());
 		try {
-			connection=cm.getConnection();
 			statement=connection.prepareStatement("UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? "
 					+ "WHERE id=?;");
-			statement.setString(1, name);
-			if(introduced==null||introduced=="")
+			statement.setString(1, wrapper.getName());
+			if(wrapper.getIntroduced()==null)
 				statement.setNull(2, Types.TIMESTAMP);
 			else
-				statement.setString(2, introduced);
-			if(discontinued==null||discontinued=="")
+				statement.setTimestamp(2,new Timestamp(wrapper.getIntroduced().getTime()));
+			if(wrapper.getDiscontinued()==null)
 				statement.setNull(3, Types.TIMESTAMP);
 			else
-				statement.setString(3, discontinued);
-			if(companyId.equals("0"))
+				statement.setTimestamp(3, new Timestamp(wrapper.getDiscontinued().getTime()));
+			if(wrapper.getCompanyId()<1)
 				statement.setNull(4, Types.INTEGER);
 			else
-				statement.setString(4, companyId);
-			statement.setLong(5, id);
+				statement.setLong(4, wrapper.getCompanyId());
+			statement.setLong(5, wrapper.getId());
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			logger.debug("SQLException while editing computer");
-			e.printStackTrace();
+			throw e;
 		}finally {
-			closeConnections(null, statement, connection);
+			closeObjects(null, statement);
 		}
 		
 		
 	}
 
-	public void delete(long computerId) {
-		Connection connection=null;
+	public void delete(Connection connection, long computerId) throws SQLException {
 		PreparedStatement statement=null;
 		
 		logger.info("Deleting computer n°"+computerId);
 		try {
-			connection=cm.getConnection();
 			statement=connection.prepareStatement("DELETE FROM computer WHERE id=?;");
 			statement.setLong(1,computerId);
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			logger.debug("SQLException while deleting computer");
-			e.printStackTrace();
+			throw e;
 		}finally {
-			closeConnections(null, statement, connection);
+			closeObjects(null, statement);
 		}
 		
 	}

@@ -18,5 +18,7 @@
 	<classpathentry kind="lib" path="/home/excilys/Development/slf4j-1.7.6/slf4j-api-1.7.6.jar" sourcepath="/home/excilys/Development/slf4j-1.7.6/slf4j-api-1.7.6-sources.jar"/>
 	<classpathentry kind="lib" path="/home/excilys/Development/logback-1.1.1/logback-classic-1.1.1.jar"/>
 	<classpathentry kind="lib" path="/home/excilys/Development/logback-1.1.1/logback-core-1.1.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/bonecp-0.7.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/guava-16.0.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
