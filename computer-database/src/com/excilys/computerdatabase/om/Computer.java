@@ -1,6 +1,5 @@
 package com.excilys.computerdatabase.om;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -13,14 +12,57 @@ public class Computer {
 	
 
 	public Computer() {
+		this.id=-1;
+		this.name=null;
+		this.company=null;
+		this.introduced=null;
+		this.discontinued=null;
 	}
-	//TODO: use pattern builder instead?
-	public Computer(long id, String name, FrenchDate introduced, FrenchDate discontinued, Company company){
-		this.id=id;
-		this.name=name;
-		this.introduced= introduced;
-		this.discontinued= discontinued;
-		this.company=company;
+	
+	public static class Builder{
+		Computer computer;
+		
+		private Builder(){
+			this.computer=new Computer();
+		}
+		
+		public Builder id(long id){
+			if(id>0)
+				this.computer.setId(id);
+			return this;
+		}
+		
+		public Builder name(String name){
+			if(name!=null)
+				this.computer.setName(name);
+			return this;
+		}
+		
+		public Builder introduced(FrenchDate intro) {
+			if(intro!=null)
+				this.computer.setIntroduced(intro);
+			return this;
+		}
+		
+		public Builder discontinued(FrenchDate disco) {
+			if(disco!=null)	
+				this.computer.setDiscontinued(disco);
+			return this;
+		}
+		
+		public Builder company(Company company) {
+			if(company!=null)
+				this.computer.setCompany(company);
+			return this;
+		}
+		
+		public Computer build() {
+			return this.computer;
+		}
+	}
+	
+	public static Builder builder(){
+		return new Builder();
 	}
 
 	public long getId() {

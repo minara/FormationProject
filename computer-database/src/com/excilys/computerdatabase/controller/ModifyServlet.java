@@ -12,12 +12,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.computerdatabase.dao.CompanyService;
-import com.excilys.computerdatabase.dao.ComputerService;
-import com.excilys.computerdatabase.dao.UpdateComputerWrapper;
 import com.excilys.computerdatabase.om.Company;
 import com.excilys.computerdatabase.om.Computer;
 import com.excilys.computerdatabase.om.FrenchDate;
+import com.excilys.computerdatabase.service.CompanyService;
+import com.excilys.computerdatabase.service.ComputerService;
 
 /**
  * Servlet implementation class ModifyServlet
@@ -30,15 +29,15 @@ public class ModifyServlet extends HttpServlet {
 	private long id;
 	private Computer computer;
 	private String search;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ModifyServlet() {
-        super();
-        companyService= CompanyService.getInstance();
-        computerService=ComputerService.getInstance();
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public ModifyServlet() {
+		super();
+		companyService= CompanyService.getInstance();
+		computerService=ComputerService.getInstance();
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -47,9 +46,11 @@ public class ModifyServlet extends HttpServlet {
 		List<Company> companies=new ArrayList<Company>();
 		id=Long.parseLong(request.getParameter("computerId"));
 		search=request.getParameter("search");
-		
+		//System.out.println(search);
+
 		companies=companyService.getCompanies();
 		computer=computerService.getComputer(id);
+
 		request.setAttribute("companies", companies);
 		request.setAttribute("computer", computer);
 		request.setAttribute("search", search);
@@ -60,26 +61,32 @@ public class ModifyServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		UpdateComputerWrapper wrapper=new UpdateComputerWrapper();
-		wrapper.setName(request.getParameter("name"));
+		Computer computer=new Computer();
+		computer.setName(request.getParameter("name"));
 		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
 		if(request.getParameter("introducedDate")!=null&&request.getParameter("introducedDate")!="")
 			try {
-				wrapper.setIntroduced(new FrenchDate(format.parse(request.getParameter("introducedDate"))));
+				computer.setIntroduced(new FrenchDate(format.parse(request.getParameter("introducedDate"))));
 			} catch (ParseException e) {
 				//ignore
 			}
 		if(request.getParameter("discontinuedDate")!=null&&request.getParameter("discontinuedDate")!="")
 			try {
-				wrapper.setDiscontinued(new FrenchDate(format.parse(request.getParameter("discontinuedDate"))));
+				computer.setDiscontinued(new FrenchDate(format.parse(request.getParameter("discontinuedDate"))));
 			} catch (ParseException e) {
 				//ignore
 			}
-		if(request.getParameter("company")!=null)
-			wrapper.setCompanyId(Long.parseLong(request.getParameter("company")));
-		wrapper.setId(id);
-					
-		computerService.edit(wrapper);
+		if(request.getParameter("company")!=null){
+			Company c=Company.builder()
+					.id(Long.parseLong(request.getParameter("company")))
+					.build();
+			computer.setCompany(c);
+		} 
+
+		computer.setId(id);
+
+		computerService.edit(computer);
+
 		if(search==null||search.length()==0)
 			response.sendRedirect("DashboardServlet");
 		else{

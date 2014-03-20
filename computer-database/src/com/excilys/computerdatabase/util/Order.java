@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.dao;
+package com.excilys.computerdatabase.util;
 
 public enum Order {
 	NAME, INTRODUCED, DISCONTINUED, COMPANY;

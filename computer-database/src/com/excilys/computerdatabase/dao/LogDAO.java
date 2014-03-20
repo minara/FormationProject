@@ -14,16 +14,18 @@ import org.slf4j.LoggerFactory;
 
 public class LogDAO {
 	private final static LogDAO ld=new LogDAO();
-	final Logger logger= LoggerFactory.getLogger(CompanyDAO.class);
+	final Logger logger= LoggerFactory.getLogger(LogDAO.class);
+	private DAOFactory factory;
 
 	private LogDAO() {
+		factory=DAOFactory.FACTORY;
 	}
 	
 	public static LogDAO getInstance(){
 		return ld;
 	}
 	
-	private void closeConnections(ResultSet rs, Statement stmt){
+	private void closeConnections(ResultSet rs, Statement stmt,Connection connection){
 		try {
 			if (rs != null)
 
@@ -32,6 +34,8 @@ public class LogDAO {
 			if (stmt != null)
 
 				stmt.close();
+			if(connection!=null&&connection.getAutoCommit())
+				factory.closeConnection();
 			
 		} catch (SQLException e) {
 			logger.debug("SQLException while closing connection to database in ComputerDAO");
@@ -39,11 +43,13 @@ public class LogDAO {
 	}
 
 	
-	public void add(Connection connection, String operation, String table, long computerId) throws SQLException{
+	public void add( String operation, String table, long computerId) {
+		Connection connection= null;
 		PreparedStatement statement=null;
 		
 		logger.info("New operation "+operation+" on computer "+computerId);
 		try {
+			connection=factory.getConnection();
 			statement=connection.prepareStatement("INSERT INTO log(id, time, operation, table_name, computer_id)"
 					+ "VALUES(0,?,?,?,?);");
 			Date d=new Date();
@@ -57,9 +63,10 @@ public class LogDAO {
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			logger.info("Failed to add operation "+operation+" on computer "+computerId+"to base");
-			throw e;
+			DAOFactory.getErrorTL().set(true);
+			e.printStackTrace();
 		}finally{
-			closeConnections(null, statement);
+			closeConnections(null, statement,connection);
 		}
 		
 	}

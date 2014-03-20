@@ -1,7 +1,6 @@
 package com.excilys.computerdatabase.controller;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,11 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.computerdatabase.dao.ComputerDAO;
-import com.excilys.computerdatabase.dao.ComputerService;
-import com.excilys.computerdatabase.dao.Order;
-import com.excilys.computerdatabase.dao.SearchComputersWrapper;
 import com.excilys.computerdatabase.om.Computer;
+import com.excilys.computerdatabase.om.Page;
+import com.excilys.computerdatabase.service.ComputerService;
+import com.excilys.computerdatabase.util.Order;
 
 /**
  * Servlet implementation class DashboardServlet
@@ -38,53 +36,36 @@ public class DashboardServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int count, start, pageMax ;
-		List<Computer> computers;
-		String name;
 		boolean delete;
-		SearchComputersWrapper wrapper=new SearchComputersWrapper();
+		Page<Computer> wrapper;
 		String nameSrc, introSrc, discoSrc, compSrc;
 		nameSrc=introSrc=discoSrc=compSrc="image/downgris.jpg";
 
 		if(request.getParameter("delete")!=null)
 			delete=Boolean.parseBoolean(request.getParameter("delete"));
 		else delete=false;
-
 		if(delete==true){
 			long computerId=Long.parseLong(request.getParameter("computerId"));
 			computerService.delete(computerId);
 		}
-
-		name=request.getParameter("search");
-		wrapper.setName(name);
-
+		
 		if(request.getParameter("searchDomain")!=null)
 			searchDomain=Integer.parseInt(request.getParameter("searchDomain"));
-		wrapper.setSearchDomain(searchDomain);
-
-		computerService.count(wrapper);
-		count=wrapper.getCount();
 
 		if(request.getParameterValues("limitation")!=null)
 			limit=Integer.parseInt(request.getParameter("limitation"));
 
-		wrapper.setLimit(limit);
+		Page.Builder<Computer> cb = new Page.Builder<Computer>();
+		wrapper= cb.name(request.getParameter("search"))
+					.searchDomain(searchDomain)
+					.limit(limit)
+					.page(page)
+					.build();
 
-		pageMax=count/limit+1;
 		if(request.getParameter("page")!=null){
-			int p=Integer.parseInt(request.getParameter("page"));
-			if(p>0){
-				if(p<pageMax+1)
-					page=p;
-				else page=pageMax;
-			}
-		}else{
-			if(page>pageMax)
-				page=pageMax;
+			wrapper.setNewPage(Integer.parseInt(request.getParameter("page")));
 		}
-		start=limit*(page-1);
-		wrapper.setStart(start);
-
+		
 		if(request.getParameter("order")!=null){
 			Order o=Order.getOrder(request.getParameter("order"));
 			if(order.equals(o)){
@@ -94,6 +75,12 @@ public class DashboardServlet extends HttpServlet {
 				asc=true;
 			}
 		}
+		try{
+			wrapper.setOrder(order);
+		}catch (Exception e){
+			System.out.println("Choosen order is impossible");
+		}
+		wrapper.setAsc(asc);
 		switch(order){
 		case NAME:
 			if(asc) nameSrc="image/downnoir.jpg";
@@ -111,28 +98,19 @@ public class DashboardServlet extends HttpServlet {
 			if(asc) compSrc="image/downnoir.jpg";
 			else compSrc="image/upnoir.jpg";
 			break;
+		default:
+			break;
 		}
-		try{
-			wrapper.setOrder(order);
-		}catch (Exception e){
-			System.out.println("Choosen order is impossible");
-		}
-		wrapper.setAsc(asc);
 
 		computerService.search(wrapper);
-		computers=wrapper.getComputers();
+		
+		page=wrapper.getPage();
 
-		request.setAttribute("name", name);
-		request.setAttribute("domain", searchDomain);
-		request.setAttribute("count", count);
-		request.setAttribute("perPage", limit);
-		request.setAttribute("pageNumber", page);
-		request.setAttribute("lastPage", pageMax);
+		request.setAttribute("wrapper", wrapper);
 		request.setAttribute("nameSrc", nameSrc);
 		request.setAttribute("introSrc", introSrc);
 		request.setAttribute("discoSrc", discoSrc);
 		request.setAttribute("compSrc", compSrc);
-		request.setAttribute("computers", computers);
 		request.getRequestDispatcher("WEB-INF/dashboard.jsp").forward(request, response);
 	}
 

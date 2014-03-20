@@ -12,13 +12,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.computerdatabase.dao.CompanyDAO;
-import com.excilys.computerdatabase.dao.CompanyService;
-import com.excilys.computerdatabase.dao.ComputerDAO;
-import com.excilys.computerdatabase.dao.ComputerService;
-import com.excilys.computerdatabase.dao.UpdateComputerWrapper;
 import com.excilys.computerdatabase.om.Company;
+import com.excilys.computerdatabase.om.Computer;
 import com.excilys.computerdatabase.om.FrenchDate;
+import com.excilys.computerdatabase.service.CompanyService;
+import com.excilys.computerdatabase.service.ComputerService;
 
 /**
  * Servlet implementation class AddComputerServlet
@@ -43,7 +41,9 @@ public class AddComputerServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		List<Company> companies=new ArrayList<Company>();
+		
 		companies=companyService.getCompanies();
+		
 		request.setAttribute("companies", companies);
 		request.getRequestDispatcher("WEB-INF/addComputer.jsp").forward(request, response);
 	}
@@ -51,27 +51,32 @@ public class AddComputerServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		UpdateComputerWrapper wrapper=new UpdateComputerWrapper();
-		wrapper.setName(request.getParameter("name"));
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+		Computer computer=new Computer();
+		computer.setName(request.getParameter("name"));
 		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
 		if(request.getParameter("introducedDate")!=null&&request.getParameter("introducedDate")!="")
 			try {
-				wrapper.setIntroduced(new FrenchDate(format.parse(request.getParameter("introducedDate"))));
+				computer.setIntroduced(new FrenchDate(format.parse(request.getParameter("introducedDate"))));
 			} catch (ParseException e) {
 				//ignore
 			}
 		if(request.getParameter("discontinuedDate")!=null&&request.getParameter("discontinuedDate")!="")
 			try {
-				wrapper.setDiscontinued(new FrenchDate(format.parse(request.getParameter("discontinuedDate"))));
+				computer.setDiscontinued(new FrenchDate(format.parse(request.getParameter("discontinuedDate"))));
 			} catch (ParseException e) {
 				//ignore
 			}
-		if(request.getParameter("company")!=null)
-			wrapper.setCompanyId(Long.parseLong(request.getParameter("company")));
-		//System.out.println(name+" "+introduced+" "+discontinued+" "+id);
+		if(request.getParameter("company")!=null){
+			Company c=Company.builder()
+							.id(Long.parseLong(request.getParameter("company")))
+							.build();
+			computer.setCompany(c);
+		}
 		
-		computerService.add(wrapper);
+		
+		computerService.add(computer);
+		
 		response.sendRedirect("DashboardServlet");
 		
 	}

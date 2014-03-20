@@ -1,10 +1,13 @@
 package com.excilys.computerdatabase.om;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class FrenchDate extends Date {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
 
 	public FrenchDate() {

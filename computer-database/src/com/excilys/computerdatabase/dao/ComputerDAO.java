@@ -10,7 +10,6 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,19 +17,22 @@ import org.slf4j.LoggerFactory;
 import com.excilys.computerdatabase.om.Company;
 import com.excilys.computerdatabase.om.Computer;
 import com.excilys.computerdatabase.om.FrenchDate;
+import com.excilys.computerdatabase.om.Page;
 
 public class ComputerDAO {
 	private final static ComputerDAO cd=new ComputerDAO();
 	final Logger logger=LoggerFactory.getLogger(ComputerDAO.class);
+	private DAOFactory factory;
 
 	private ComputerDAO() {
+		factory=DAOFactory.FACTORY;
 	}
 
 	public static ComputerDAO getInstance() {
 		return cd;
 	}
 
-	private void closeObjects(ResultSet rs, Statement stmt){
+	private void closeObjects(ResultSet rs, Statement stmt, Connection connection){
 		try {
 			if (rs != null)
 
@@ -40,39 +42,42 @@ public class ComputerDAO {
 
 				stmt.close();
 			
+			if(connection!=null&&connection.getAutoCommit())
+				factory.closeConnection();
+			
 		} catch (SQLException e) {
 			logger.debug("SQLException while closing connection to database in ComputerDAO");
 		}
 	}
 
 	private Computer createComputer(ResultSet rs) throws SQLException {
-		Computer c=new Computer();
-		c.setId(new Long(rs.getLong(1)));
-		c.setName(rs.getString(2));
+		Company company=Company.builder()
+								.id(new Long(rs.getLong(5)))
+								.name(rs.getString(6))
+								.build();
+		Computer c=Computer.builder()
+							.id(new Long(rs.getLong(1)))
+							.name(rs.getString(2))
+							.company(company)
+							.build();
 
 		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 		try {
-			if(rs.getTimestamp(3)==null)
-				c.setIntroduced(null);
-			else{
+			if(rs.getTimestamp(3)!=null)
 				c.setIntroduced(new FrenchDate(format.parse(rs.getTimestamp(3).toString())));
-			}
-			if(rs.getTimestamp(4)==null)
-				c.setDiscontinued(null);
-			else
+			
+			if(rs.getTimestamp(4)!=null)
 				c.setDiscontinued(new FrenchDate(format.parse(rs.getTimestamp(4).toString())));
 		} catch (ParseException e) {
 			logger.debug("Exception while parsing the date to create a computer");
 			e.printStackTrace();
 		}
 
-		c.setCompany(new Company());
-		c.getCompany().setId(new Long(rs.getLong(5)));
-		c.getCompany().setName(rs.getString(6));
 		return c;
 	}
 	
-	public void count(Connection connection, SearchComputersWrapper wrapper) throws SQLException{
+	public void count(Page<Computer> wrapper){
+		Connection connection=null;
 		PreparedStatement statement=null;
 		ResultSet results=null;
 		String name=wrapper.getName();
@@ -80,7 +85,7 @@ public class ComputerDAO {
 		
 		logger.info("Counting computers");
 		try {
-			//connection=cm.getConnection();
+			connection=factory.getConnection();
 			if(name==null||name.length()==0){
 				statement=connection.prepareStatement("SELECT COUNT(id) FROM computer;");
 			}else{
@@ -96,14 +101,16 @@ public class ComputerDAO {
 			  nb=results.getInt(1);
 		} catch (SQLException e) {
 			logger.debug("SQLException while trying to count computers");
-			throw e;
+			DAOFactory.getErrorTL().set(true);
+			e.printStackTrace();
 		}finally {
-			closeObjects(results, statement);
+			closeObjects(results, statement, connection);
 		}
 		wrapper.setCount(nb);
 	}
 	
-	public void getList(Connection connection, SearchComputersWrapper wrapper) throws SQLException{
+	public void getList( Page<Computer> wrapper){
+		Connection connection=null;
 		ArrayList<Computer> computers=new ArrayList<Computer>(wrapper.getLimit());
 		PreparedStatement statement=null;
 		ResultSet results=null;
@@ -133,6 +140,7 @@ public class ComputerDAO {
 			asc="DESC";
 		
 		try {
+			connection=factory.getConnection();
 			if(name==null||name.length()==0){
 				statement=connection.prepareStatement("SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct "
 						+ "LEFT OUTER JOIN company AS cn ON ct.company_id=cn.id ORDER BY ? "+asc+" LIMIT ?,?;");
@@ -169,21 +177,24 @@ public class ComputerDAO {
 			}
 		} catch (SQLException e) {
 			logger.debug("SQLException while trying to list all computers");
-			throw e;
+			DAOFactory.getErrorTL().set(true);
+			e.printStackTrace();
 		}finally {
-			closeObjects(results, statement);
+			closeObjects(results, statement, connection);
 		}
 
-		wrapper.setComputers(computers);
+		wrapper.setObjects(computers);
 	}
 
-	public Computer getComputer(Connection connection, long id) throws SQLException{
+	public Computer getComputer(long id) {
+		Connection connection=null;
 		Computer computer=null;
 		PreparedStatement statement=null;
 		ResultSet results=null;
 		
 		logger.info("Selecting computer n°"+id);
 		try {
+			connection=factory.getConnection();
 			statement=connection.prepareStatement("SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct "
 					+ "LEFT OUTER JOIN company AS cn ON ct.company_id=cn.id WHERE ct.id=?;");
 			statement.setLong(1, id);
@@ -193,90 +204,104 @@ public class ComputerDAO {
 			}
 		} catch (SQLException e) {
 			logger.debug("SQLException while trying to search computer based on id");
-			throw e;
+			DAOFactory.getErrorTL().set(true);
+			e.printStackTrace();
 		}finally {
-			closeObjects(results, statement);
+			closeObjects(results, statement, connection);
 		}
 
 		return computer;
 	}
 	
-	public void add(Connection connection, UpdateComputerWrapper wrapper) throws SQLException{
+	public void add(Computer computer){
+		Connection connection=null;
 		PreparedStatement statement=null;
+		ResultSet results=null;
 		
 		logger.info("Adding a new computer");
 		try {
+			connection=factory.getConnection();
 			statement=connection.prepareStatement("INSERT INTO computer(id, name, introduced, discontinued, company_id)"
-					+ "VALUES(0,?,?,?,?);");
-			statement.setString(1, wrapper.getName());
-			if(wrapper.getIntroduced()==null)
+					+ "VALUES(0,?,?,?,?);", Statement.RETURN_GENERATED_KEYS);
+			statement.setString(1, computer.getName());
+			if(computer.getIntroduced()==null)
 				statement.setNull(2, Types.TIMESTAMP);
 			else
-				statement.setTimestamp(2,new Timestamp(wrapper.getIntroduced().getTime()));
-			if(wrapper.getDiscontinued()==null)
+				statement.setTimestamp(2,new Timestamp(computer.getIntroduced().getTime()));
+			if(computer.getDiscontinued()==null)
 				statement.setNull(3, Types.TIMESTAMP);
 			else
-				statement.setTimestamp(3, new Timestamp(wrapper.getDiscontinued().getTime()));
-			if(wrapper.getCompanyId()<1)
+				statement.setTimestamp(3, new Timestamp(computer.getDiscontinued().getTime()));
+			if(computer.getCompany()==null||computer.getCompany().getId()<1)
 				statement.setNull(4, Types.INTEGER);
 			else
-				statement.setLong(4, wrapper.getCompanyId());
+				statement.setLong(4, computer.getCompany().getId());
 			statement.executeUpdate();
+			results=statement.getGeneratedKeys();
+			if(results.next())
+				computer.setId(results.getLong(1));
 		} catch (SQLException e) {
 			logger.debug("SQLException while adding computer");
-			throw e;
+			DAOFactory.getErrorTL().set(true);
+			e.printStackTrace();
 		}finally {
-			closeObjects(null, statement);
+			closeObjects(null, statement,connection);
 		}
 		
 		
 	}
 	
-	public void edit(Connection connection, UpdateComputerWrapper wrapper) throws SQLException{
+	public void edit( Computer computer) {
+		Connection connection=null;
 		PreparedStatement statement=null;
 		
-		logger.info("Editing computer n°"+wrapper.getId());
+		logger.info("Editing computer n°"+computer.getId());
 		try {
+			connection=factory.getConnection();
 			statement=connection.prepareStatement("UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? "
 					+ "WHERE id=?;");
-			statement.setString(1, wrapper.getName());
-			if(wrapper.getIntroduced()==null)
+			statement.setString(1, computer.getName());
+			if(computer.getIntroduced()==null)
 				statement.setNull(2, Types.TIMESTAMP);
 			else
-				statement.setTimestamp(2,new Timestamp(wrapper.getIntroduced().getTime()));
-			if(wrapper.getDiscontinued()==null)
+				statement.setTimestamp(2,new Timestamp(computer.getIntroduced().getTime()));
+			if(computer.getDiscontinued()==null)
 				statement.setNull(3, Types.TIMESTAMP);
 			else
-				statement.setTimestamp(3, new Timestamp(wrapper.getDiscontinued().getTime()));
-			if(wrapper.getCompanyId()<1)
+				statement.setTimestamp(3, new Timestamp(computer.getDiscontinued().getTime()));
+			if(computer.getCompany()==null||computer.getCompany().getId()<1)
 				statement.setNull(4, Types.INTEGER);
 			else
-				statement.setLong(4, wrapper.getCompanyId());
-			statement.setLong(5, wrapper.getId());
+				statement.setLong(4, computer.getCompany().getId());
+			statement.setLong(5, computer.getId());
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			logger.debug("SQLException while editing computer");
-			throw e;
+			DAOFactory.getErrorTL().set(true);
+			e.printStackTrace();
 		}finally {
-			closeObjects(null, statement);
+			closeObjects(null, statement,connection);
 		}
 		
 		
 	}
 
-	public void delete(Connection connection, long computerId) throws SQLException {
+	public void delete( long computerId) {
+		Connection connection=null;
 		PreparedStatement statement=null;
 		
 		logger.info("Deleting computer n°"+computerId);
 		try {
+			connection=factory.getConnection();
 			statement=connection.prepareStatement("DELETE FROM computer WHERE id=?;");
 			statement.setLong(1,computerId);
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			logger.debug("SQLException while deleting computer");
-			throw e;
+			DAOFactory.getErrorTL().set(true);
+			e.printStackTrace();
 		}finally {
-			closeObjects(null, statement);
+			closeObjects(null, statement,connection);
 		}
 		
 	}

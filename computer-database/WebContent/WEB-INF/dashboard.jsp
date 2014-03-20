@@ -3,15 +3,15 @@
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags"%>
 
 <section id="main">
-	<h1 id="homeTitle">${count} Computers found</h1>
+	<h1 id="homeTitle">${wrapper.count} Computers found</h1>
 	<div id="actions">
 		<form action="" method="GET">
-			<input type="search" id="searchbox" name="search" value="${name}"
+			<input type="search" id="searchbox" name="search" value="${wrapper.name}"
 				placeholder="Search name" data-validation="alphanumeric" data-validation-allowing=" -_/." data-validation-optional="true" > 
 			<input type="submit" id="searchsubmit" value="Filter by name" class="btn primary">
 			<select name="searchDomain">
-				<option value="0" ${domain==0 ? 'selected' : ''}>Computer</option>
-				<option value="1" ${domain==1 ? 'selected' : ''}>Company</option>
+				<option value="0" ${wrapper.searchDomain==0 ? 'selected' : ''}>Computer</option>
+				<option value="1" ${wrapper.searchDomain==1 ? 'selected' : ''}>Company</option>
 			</select>
 		</form>
 
@@ -26,24 +26,24 @@
 				<th></th>
 				<!-- Table header for Computer Name -->
 				<th>Computer Name
-					<a href="DashboardServlet?order=name&search=${name}">
+					<a href="DashboardServlet?order=name&search=${wrapper.name}">
 							<img alt="^" src="${nameSrc}" style="height:15px; width:15px">
 						</a>
 				</th>
 				<th>Introduced Date
-					<a href="DashboardServlet?order=introduced&search=${name}">
+					<a href="DashboardServlet?order=introduced&search=${wrapper.name}">
 							<img alt="^" src="${introSrc}" style="height:15px; width:15px">
 						</a>
 				</th>
 				<!-- Table header for Discontinued Date -->
 				<th>Discontinued Date
-					<a href="DashboardServlet?order=discontinued&search=${name}">
+					<a href="DashboardServlet?order=discontinued&search=${wrapper.name}">
 							<img alt="^" src="${discoSrc}" style="height:15px; width:15px">
 						</a>
 				</th>
 				<!-- Table header for Company -->
 				<th>Company
-					<a href="DashboardServlet?order=company&search=${name}">
+					<a href="DashboardServlet?order=company&search=${wrapper.name}">
 							<img alt="^" src="${compSrc}" style="height:15px; width:15px">
 						</a>
 				</th>
@@ -51,10 +51,10 @@
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach var="computer" items="${computers}">
+			<c:forEach var="computer" items="${wrapper.objects}">
 				<tr>
 					<td class="col1">
-						<a href="ModifyServlet?computerId=${computer.id}&search=${name}">
+						<a href="ModifyServlet?computerId=${computer.id}&search=${wrapper.name}">
 							<img alt="Edit" src="image/boutonplume.jpg" style="height:25px; width:25px">
 						</a>
 					</td>
@@ -63,7 +63,7 @@
 					<td>${computer.discontinued}</td>
 					<td>${computer.company.name}</td>
 					<td>
-						<a href="DashboardServlet?computerId=${computer.id}&delete=true&search=${name}">
+						<a href="DashboardServlet?computerId=${computer.id}&delete=true&search=${wrapper.name}">
 							<img alt="Delete" src="image/boutondelete.jpg" style="height:25px; width:25px">
 						</a>
 					</td>
@@ -73,7 +73,7 @@
 		</tbody>
 	</table>
 	
-	<p:pager pageNumber="${pageNumber}" lastPage="${lastPage}" perPage="${perPage}" search="${name}"/>
+	<p:pager pageNumber="${wrapper.page}" lastPage="${wrapper.pageMax}" perPage="${wrapper.limit}" search="${wrapper.name}"/>
 	
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>

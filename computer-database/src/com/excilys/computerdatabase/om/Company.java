@@ -5,13 +5,39 @@ public class Company {
 	private String name;
 
 	public Company() {
+		this.id=-1;
+		this.name=null;
 	}
-	//TODO: use pattern builder instead?
-	public Company(long id, String name){
-		this.id=id;
-		this.name=name;
+	
+	public static class Builder{
+		Company company;
+		
+		private Builder(){
+			this.company=new Company();
+		}
+		
+		public Builder id(long id){
+			if(id>0)
+				this.company.setId(id);
+			return this;
+		}
+		
+		public Builder name(String name){
+			if(name!=null)
+				this.company.setName(name);
+			return this;
+		}
+		
+		public Company build() {
+			return this.company;
+		}
+		
 	}
 
+	public static Builder builder(){
+		return new Builder();
+	}
+	
 	public long getId() {
 		return id;
 	}

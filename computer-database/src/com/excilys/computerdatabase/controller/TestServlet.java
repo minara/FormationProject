@@ -1,7 +1,7 @@
 package com.excilys.computerdatabase.controller;
 
 import java.io.IOException;
-import java.util.List;
+//import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.computerdatabase.dao.CompanyDAO;
+/*import com.excilys.computerdatabase.dao.CompanyDAO;
 import com.excilys.computerdatabase.dao.ComputerDAO;
 import com.excilys.computerdatabase.dao.ConnectionManager;
 import com.excilys.computerdatabase.om.Company;
-import com.excilys.computerdatabase.om.Computer;
+import com.excilys.computerdatabase.om.Computer;*/
 
 /**
  * Servlet implementation class TestServlet
