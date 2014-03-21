@@ -6,7 +6,7 @@ import com.excilys.computerdatabase.util.Order;
 
 public class Page<E>{
 	private int start, limit, count, searchDomain, page, pageMax, newPage;
-	private String name;
+	private String name, errorMsg;
 	private List<E> objects;
 	private Order order;
 	private boolean asc;
@@ -22,6 +22,7 @@ public class Page<E>{
 		this.searchDomain=0;
 		this.order=Order.NAME;
 		this.asc=true;
+		this.errorMsg=null;
 	}
 	
 	public void computePage() throws Exception{
@@ -120,12 +121,25 @@ public class Page<E>{
 			return this;
 		}
 		
+		public Builder<E> errorMsg(String msg){
+			if(msg!=null)
+				this.wrapper.setErrorMsg(msg);
+			return this;
+		}
+		
 		public Page<E> build() {
 			return this.wrapper;
 		}
 	}
 	
-	
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
+	}
+
 	public int getNewPage() {
 		return newPage;
 	}

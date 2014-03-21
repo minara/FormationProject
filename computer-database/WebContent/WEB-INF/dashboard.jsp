@@ -27,24 +27,24 @@
 				<!-- Table header for Computer Name -->
 				<th>Computer Name
 					<a href="DashboardServlet?order=name&search=${wrapper.name}">
-							<img alt="^" src="${nameSrc}" style="height:15px; width:15px">
+							<img alt="^" src="<c:out value='${source[0]}' default='image/downnoir.jpg'></c:out>" style="height:15px; width:15px"/>
 						</a>
 				</th>
 				<th>Introduced Date
 					<a href="DashboardServlet?order=introduced&search=${wrapper.name}">
-							<img alt="^" src="${introSrc}" style="height:15px; width:15px">
+							<img alt="^" src="<c:out value="${source[1]}"> </c:out>" style="height:15px; width:15px"/>
 						</a>
 				</th>
 				<!-- Table header for Discontinued Date -->
 				<th>Discontinued Date
 					<a href="DashboardServlet?order=discontinued&search=${wrapper.name}">
-							<img alt="^" src="${discoSrc}" style="height:15px; width:15px">
+							<img alt="^" src="<c:out value="${source[2]}"> </c:out>" style="height:15px; width:15px"/>
 						</a>
 				</th>
 				<!-- Table header for Company -->
 				<th>Company
 					<a href="DashboardServlet?order=company&search=${wrapper.name}">
-							<img alt="^" src="${compSrc}" style="height:15px; width:15px">
+							<img alt="^" src="<c:out value="${source[3]}"> </c:out>" style="height:15px; width:15px"/>
 						</a>
 				</th>
 				<th></th>
@@ -75,6 +75,7 @@
 	
 	<p:pager pageNumber="${wrapper.page}" lastPage="${wrapper.pageMax}" perPage="${wrapper.limit}" search="${wrapper.name}"/>
 	
+	<script type="text/javascript">if('${error}'==='true'){alert('${errorMsg}');}</script> 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>
 	<script>

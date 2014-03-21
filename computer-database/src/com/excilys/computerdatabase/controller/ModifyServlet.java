@@ -29,6 +29,7 @@ public class ModifyServlet extends HttpServlet {
 	private long id;
 	private Computer computer;
 	private String search;
+	private boolean error=false;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -38,19 +39,29 @@ public class ModifyServlet extends HttpServlet {
 		companyService= CompanyService.getInstance();
 		computerService=ComputerService.getInstance();
 	}
+	
+	public void showErrorMsg(HttpServletRequest request) {
+		String errorMsg="An error has occured while treating your request. Please, try again.";
+		request.setAttribute("errorMsg", errorMsg);
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		List<Company> companies=new ArrayList<Company>();
-		id=Long.parseLong(request.getParameter("computerId"));
+		if(request.getParameter("computerId")!=null)
+			id=Long.parseLong(request.getParameter("computerId"));
 		search=request.getParameter("search");
 		//System.out.println(search);
 
 		companies=companyService.getCompanies();
-		computer=computerService.getComputer(id);
-
+		if(error){
+			showErrorMsg(request);
+		}else{
+			computer=computerService.getComputer(id);
+		}
+		request.setAttribute("error", error);
 		request.setAttribute("companies", companies);
 		request.setAttribute("computer", computer);
 		request.setAttribute("search", search);
@@ -85,12 +96,13 @@ public class ModifyServlet extends HttpServlet {
 
 		computer.setId(id);
 
-		computerService.edit(computer);
-
-		if(search==null||search.length()==0)
-			response.sendRedirect("DashboardServlet");
-		else{
+		if(computerService.edit(computer)){
 			response.sendRedirect("DashboardServlet?search="+search);
+			error=false;
+		}else{
+			this.computer=computer;
+			error=true;
+			doGet(request, response);
 		}
 	}
 

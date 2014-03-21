@@ -61,6 +61,7 @@ public enum DAOFactory {
 		if(errorTL.get()){
 			try {
 				connectionTL.get().rollback();
+				logger.debug("rollback");
 			} catch (SQLException e) {
 				logger.warn("Rollback failed");
 				e.printStackTrace();

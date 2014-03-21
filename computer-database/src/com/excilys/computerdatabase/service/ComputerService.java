@@ -27,42 +27,33 @@ public class ComputerService {
 		return cs;
 	} 
 
-	/*private void closeConnection(Connection connection){
-		try {
-			connection.close();
-		} catch (SQLException e) {
-			logger.debug("Service failed to close connection");
-			e.printStackTrace();
-		}
-	}*/
-
-	public void count(Page<Computer> wrapper) {
-
+	public boolean count(Page<Computer> wrapper) {
+		boolean success=true;
 		logger.info("Count transaction");
 
 		factory.startTransaction();
 		if(DAOFactory.getErrorTL().get()){
-			//wrapper message
+			success=false;
 		}else{
 			computerDao.count( wrapper);
 			if(!DAOFactory.getErrorTL().get())
 				logDao.add("Count",table, -1);
 			factory.endTransaction();
 			if(DAOFactory.getErrorTL().get()){
-				//wrapper message
+				success=false;
 			}
 		}
 
 		factory.closeConnection();
-
+		return success;
 	}
 
-	public void search(Page<Computer> wrapper){
-
+	public boolean search(Page<Computer> wrapper){
+		boolean success=true;
 		logger.info("Count and search transaction");
 		factory.startTransaction();
 		if(DAOFactory.getErrorTL().get()){
-			//wrapper message
+			success=false;
 		}else{
 			computerDao.count( wrapper);
 			if(!DAOFactory.getErrorTL().get()){
@@ -73,90 +64,87 @@ public class ComputerService {
 						logDao.add("Count and search",table, -1);
 				} catch (Exception e) {
 					logger.debug("Incorrect count made the page computation fail");
+					DAOFactory.getErrorTL().set(true);
 					e.printStackTrace();
 				}
 			}
 			factory.endTransaction();
 			if(DAOFactory.getErrorTL().get()){
-				//wrapper message
+				success=false;
 			}
 		}
-			factory.closeConnection();
-		}
-
-		public Computer getComputer(long id){
-			Computer computer=null;
-
-			logger.info("Select computer transaction");
-			factory.startTransaction();
-			if(DAOFactory.getErrorTL().get()){
-				//wrapper message
-			}else{
-				computer=computerDao.getComputer( id);
-				if(!DAOFactory.getErrorTL().get())
-					logDao.add("Select",table, id);
-				factory.endTransaction();
-				if(DAOFactory.getErrorTL().get()){
-					//wrapper message
-				}
-			}	
-				factory.closeConnection();
-			return computer;
-		}
-
-		public void add(Computer computer){
-			
-			logger.info("Add transaction");
-			factory.startTransaction();
-			if(DAOFactory.getErrorTL().get()){
-				//wrapper message
-			}else{
-				computerDao.add( computer);
-				if(!DAOFactory.getErrorTL().get())
-					logDao.add("Add",table, computer.getId());
-				factory.endTransaction();
-				if(DAOFactory.getErrorTL().get()){
-					//wrapper message
-				}
-			}
-			factory.closeConnection();
-			
-		}
-
-		public void edit(Computer computer){
-			logger.info("Edit transaction");
-			factory.startTransaction();
-			if(DAOFactory.getErrorTL().get()){
-				//wrapper message
-			}else{
-				computerDao.edit(computer);
-				if(!DAOFactory.getErrorTL().get())
-					logDao.add("Edit",table, computer.getId());
-				factory.endTransaction();
-				if(DAOFactory.getErrorTL().get()){
-					//wrapper message
-				}
-			}
-			factory.closeConnection();
-			
-		}
-
-		public void delete(long computerId){
-			logger.info("Delete transaction");
-			factory.startTransaction();
-			if(DAOFactory.getErrorTL().get()){
-				//wrapper message
-			}else{
-				computerDao.delete(computerId);
-				if(!DAOFactory.getErrorTL().get())
-					logDao.add("Delete",table, computerId);
-				factory.endTransaction();
-				if(DAOFactory.getErrorTL().get()){
-					//wrapper message
-				}
-			}
-			factory.closeConnection();
-			
-		}
-
+		factory.closeConnection();
+		return success;
 	}
+
+	public Computer getComputer(long id){
+		Computer computer = null;
+		logger.info("Select computer transaction");
+		factory.startTransaction();
+		if(!DAOFactory.getErrorTL().get()){
+			computer=computerDao.getComputer(id);
+			if(!DAOFactory.getErrorTL().get())
+				logDao.add("Select",table, id);
+			factory.endTransaction();
+		}	
+		factory.closeConnection();
+		return computer;
+	}
+
+	public boolean add(Computer computer){
+		boolean success=true;
+		logger.info("Add transaction");
+		factory.startTransaction();
+		if(DAOFactory.getErrorTL().get()){
+			success=false;
+		}else{
+			computerDao.add( computer);
+			if(!DAOFactory.getErrorTL().get())
+				logDao.add("Add",table, computer.getId());
+			factory.endTransaction();
+			if(DAOFactory.getErrorTL().get()){
+				success=false;			}
+		}
+		factory.closeConnection();
+		return success;
+	}
+
+	public boolean edit(Computer computer){
+		boolean success=true;
+		logger.info("Edit transaction");
+		factory.startTransaction();
+		if(DAOFactory.getErrorTL().get()){
+			success=false;
+		}else{
+			computerDao.edit(computer);
+			if(!DAOFactory.getErrorTL().get())
+				logDao.add("Edit",table, computer.getId());
+			factory.endTransaction();
+			if(DAOFactory.getErrorTL().get()){
+				success=false;
+			}
+		}
+		factory.closeConnection();
+		return success;
+	}
+
+	public boolean delete(long computerId){
+		boolean success=true;
+		logger.info("Delete transaction");
+		factory.startTransaction();
+		if(DAOFactory.getErrorTL().get()){
+			success=false;
+		}else{
+			computerDao.delete(computerId);
+			if(!DAOFactory.getErrorTL().get())
+				logDao.add("Delete",table, computerId);
+			factory.endTransaction();
+			if(DAOFactory.getErrorTL().get()){
+				success=false;
+			}
+		}
+		factory.closeConnection();
+		return success;
+	}
+
+}

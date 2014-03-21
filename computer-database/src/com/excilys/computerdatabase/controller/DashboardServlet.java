@@ -1,6 +1,7 @@
 package com.excilys.computerdatabase.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,6 +24,7 @@ public class DashboardServlet extends HttpServlet {
 	private int searchDomain=0, limit=10, page=1;
 	private Order order=Order.NAME;
 	private boolean asc=true;
+	private Boolean error;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -32,6 +34,12 @@ public class DashboardServlet extends HttpServlet {
 		computerService=ComputerService.getInstance();
 	}
 
+	public void showErrorMsg(HttpServletRequest request) {
+		String errorMsg="An error has occured while treating your request. Please, try again.";
+		error=true;
+		request.setAttribute("errorMsg", errorMsg);
+	}
+
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -39,16 +47,25 @@ public class DashboardServlet extends HttpServlet {
 		boolean delete;
 		Page<Computer> wrapper;
 		String nameSrc, introSrc, discoSrc, compSrc;
-		nameSrc=introSrc=discoSrc=compSrc="image/downgris.jpg";
-
+		ArrayList<String> source=new ArrayList<String>(4);
+		int i;
+		for(i=0; i<4;i++){
+			source.add("image/downgris.jpg");
+		}
+		System.out.println(source);
+		//nameSrc=introSrc=discoSrc=compSrc="image/downgris.jpg";
+		error =false;
+		
 		if(request.getParameter("delete")!=null)
 			delete=Boolean.parseBoolean(request.getParameter("delete"));
 		else delete=false;
 		if(delete==true){
 			long computerId=Long.parseLong(request.getParameter("computerId"));
-			computerService.delete(computerId);
+			if(!computerService.delete(computerId)){
+				showErrorMsg(request);
+			}
 		}
-		
+
 		if(request.getParameter("searchDomain")!=null)
 			searchDomain=Integer.parseInt(request.getParameter("searchDomain"));
 
@@ -57,15 +74,15 @@ public class DashboardServlet extends HttpServlet {
 
 		Page.Builder<Computer> cb = new Page.Builder<Computer>();
 		wrapper= cb.name(request.getParameter("search"))
-					.searchDomain(searchDomain)
-					.limit(limit)
-					.page(page)
-					.build();
+				.searchDomain(searchDomain)
+				.limit(limit)
+				.page(page)
+				.build();
 
 		if(request.getParameter("page")!=null){
 			wrapper.setNewPage(Integer.parseInt(request.getParameter("page")));
 		}
-		
+
 		if(request.getParameter("order")!=null){
 			Order o=Order.getOrder(request.getParameter("order"));
 			if(order.equals(o)){
@@ -83,34 +100,35 @@ public class DashboardServlet extends HttpServlet {
 		wrapper.setAsc(asc);
 		switch(order){
 		case NAME:
-			if(asc) nameSrc="image/downnoir.jpg";
-			else nameSrc="image/upnoir.jpg";
+			if(asc) source.set(0,"image/downnoir.jpg");
+			else source.set(0,"image/upnoir.jpg");
 			break;
 		case INTRODUCED:
-			if(asc) introSrc="image/downnoir.jpg";
-			else introSrc="image/upnoir.jpg";
+			if(asc) source.set(1,"image/downnoir.jpg");
+			else source.set(1,"image/upnoir.jpg");
 			break;
 		case DISCONTINUED:
-			if(asc) discoSrc="image/downnoir.jpg";
-			else discoSrc="image/upnoir.jpg";
+			if(asc) source.set(2,"image/downnoir.jpg");
+			else source.set(2,"image/upnoir.jpg");
 			break;
 		case COMPANY:
-			if(asc) compSrc="image/downnoir.jpg";
-			else compSrc="image/upnoir.jpg";
+			if(asc) source.set(3,"image/downnoir.jpg");
+			else source.set(3,"image/upnoir.jpg");
 			break;
 		default:
 			break;
 		}
 
-		computerService.search(wrapper);
-		
+		if(!computerService.search(wrapper))
+			showErrorMsg(request);
 		page=wrapper.getPage();
-
+		request.setAttribute("error", error);
 		request.setAttribute("wrapper", wrapper);
-		request.setAttribute("nameSrc", nameSrc);
+		request.setAttribute("source", source);
+		/*request.setAttribute("nameSrc", nameSrc);
 		request.setAttribute("introSrc", introSrc);
 		request.setAttribute("discoSrc", discoSrc);
-		request.setAttribute("compSrc", compSrc);
+		request.setAttribute("compSrc", compSrc);*/
 		request.getRequestDispatcher("WEB-INF/dashboard.jsp").forward(request, response);
 	}
 

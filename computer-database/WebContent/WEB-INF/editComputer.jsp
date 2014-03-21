@@ -12,6 +12,7 @@
 				<div class="input">
 					<input type="text" name="name" value="${computer.name}" data-validation="alphanumeric" data-validation-allowing=" -_/."/>
 					<span class="help-inline">Required</span>
+					<div><c:out value=""></c:out></div>
 				</div>
 			</div>
 	
@@ -20,6 +21,7 @@
 				<div class="input">
 					<input type="date" name="introducedDate" value="${computer.introduced}" data-validation="pastdate" data-validation-optional="true"/>
 					<span class="help-inline">YYYY-MM-DD</span>
+					<div><c:out value=""></c:out></div>
 				</div>
 			</div>
 			<div class="clearfix">
@@ -27,6 +29,7 @@
 				<div class="input">
 					<input type="date" name="discontinuedDate" value="${computer.discontinued}" data-validation="pastdate" data-validation-optional="true"/>
 					<span class="help-inline">YYYY-MM-DD</span>
+					<div><c:out value=""></c:out></div>
 				</div>
 			</div>
 			<div class="clearfix">
@@ -46,6 +49,7 @@
 			or <a href="DashboardServlet?search=${search}" class="btn">Cancel</a>
 		</div>
 	</form>
+	<script type="text/javascript">if('${error}'==='true'){alert('${errorMsg}');}</script> 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>
 	<script>

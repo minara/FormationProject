@@ -26,7 +26,7 @@ public class AddComputerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private CompanyService companyService;
 	private ComputerService computerService;
-       
+    private boolean error=false;
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -43,7 +43,11 @@ public class AddComputerServlet extends HttpServlet {
 		List<Company> companies=new ArrayList<Company>();
 		
 		companies=companyService.getCompanies();
-		
+		if(error){
+			String errorMsg="An error has occured while treating your request. Please, try again.";
+			request.setAttribute("errorMsg", errorMsg);
+		}
+		request.setAttribute("error", error);
 		request.setAttribute("companies", companies);
 		request.getRequestDispatcher("WEB-INF/addComputer.jsp").forward(request, response);
 	}
@@ -75,9 +79,14 @@ public class AddComputerServlet extends HttpServlet {
 		}
 		
 		
-		computerService.add(computer);
-		
-		response.sendRedirect("DashboardServlet");
+		if(computerService.add(computer)){
+			error=false;
+			response.sendRedirect("DashboardServlet");
+		}else{
+			error=true;
+			request.setAttribute("computer", computer);
+			doGet(request, response);
+		}
 		
 	}
 

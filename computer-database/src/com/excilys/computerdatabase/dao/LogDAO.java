@@ -70,5 +70,23 @@ public class LogDAO {
 		}
 		
 	}
+	
+	public void rollbackTest(){
+		Connection connection= null;
+		PreparedStatement statement=null;
+		
+		logger.info("Generating rollback through sqlexception");
+		try {
+			connection=factory.getConnection();
+			statement=connection.prepareStatement("SELECT orphan FROM log;");
+			statement.executeQuery();
+		} catch (SQLException e) {
+			logger.info("SQLException occured prepare for rollback");
+			DAOFactory.getErrorTL().set(true);
+			//e.printStackTrace();
+		}finally{
+			closeConnections(null, statement,connection);
+		}
+	}
 
 }

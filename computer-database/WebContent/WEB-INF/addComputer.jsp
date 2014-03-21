@@ -10,23 +10,26 @@
 			<div class="clearfix">
 				<label for="name">Computer name:</label>
 				<div class="input">
-					<input type="text" name="name" data-validation="alphanumeric" data-validation-allowing=" -_/." />
+					<input type="text" name="name" value="${computer.name}" data-validation="alphanumeric" data-validation-allowing=" -_/." />
 					<span class="help-inline">Required</span>
+					<div><c:out value=""></c:out></div>
 				</div>
 			</div>
 	
 			<div class="clearfix">
 				<label for="introduced">Introduced date:</label>
 				<div class="input">
-					<input type="date" name="introducedDate" data-validation="pastdate" data-validation-optional="true"/>
+					<input type="date" name="introducedDate" value="${computer.introduced}" data-validation="pastdate" data-validation-optional="true"/>
 					<span class="help-inline">YYYY-MM-DD</span>
+					<div><c:out value=""></c:out></div>
 				</div>
 			</div>
 			<div class="clearfix">
 				<label for="discontinued">Discontinued date:</label>
 				<div class="input">
-					<input type="date" name="discontinuedDate" data-validation="pastdate"  data-validation-optional="true"/>
+					<input type="date" name="discontinuedDate" value="${computer.discontinued}" data-validation="pastdate"  data-validation-optional="true"/>
 					<span class="help-inline">YYYY-MM-DD</span>
+					<div><c:out value=""></c:out></div>
 				</div>
 			</div>
 			<div class="clearfix">
@@ -35,7 +38,7 @@
 					<select name="company">
 						<option value="0">--</option>
 						<c:forEach var="comp" items="${companies}">
-							<option value="${comp.id}">${comp.name}</option>
+							<option value="${comp.id}" ${computer.company==comp ? 'selected' : ''}>${comp.name}</option>
 						</c:forEach>
 					</select>
 				</div>
@@ -46,6 +49,7 @@
 			or <a href="DashboardServlet" class="btn">Cancel</a>
 		</div>
 	</form>
+	<script type="text/javascript">if('${error}'==='true'){alert('${errorMsg}');}</script> 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>
 	<script>
