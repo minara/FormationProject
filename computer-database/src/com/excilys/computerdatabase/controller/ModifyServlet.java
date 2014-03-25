@@ -12,11 +12,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.excilys.computerdatabase.dto.ComputerDTO;
+import com.excilys.computerdatabase.mapper.ComputerMapper;
 import com.excilys.computerdatabase.om.Company;
 import com.excilys.computerdatabase.om.Computer;
 import com.excilys.computerdatabase.om.FrenchDate;
 import com.excilys.computerdatabase.service.CompanyService;
 import com.excilys.computerdatabase.service.ComputerService;
+import com.excilys.computerdatabase.util.Validator;
 
 /**
  * Servlet implementation class ModifyServlet
@@ -27,7 +30,7 @@ public class ModifyServlet extends HttpServlet {
 	private CompanyService companyService;
 	private ComputerService computerService;
 	private long id;
-	private Computer computer;
+	private ComputerDTO computerDTO;
 	private String search;
 	private boolean error=false;
 
@@ -39,7 +42,7 @@ public class ModifyServlet extends HttpServlet {
 		companyService= CompanyService.getInstance();
 		computerService=ComputerService.getInstance();
 	}
-	
+
 	public void showErrorMsg(HttpServletRequest request) {
 		String errorMsg="An error has occured while treating your request. Please, try again.";
 		request.setAttribute("errorMsg", errorMsg);
@@ -59,11 +62,15 @@ public class ModifyServlet extends HttpServlet {
 		if(error){
 			showErrorMsg(request);
 		}else{
-			computer=computerService.getComputer(id);
+			computerDTO=computerService.getComputer(id);
 		}
+
+		if(request.getAttribute("computer")==null)
+			request.setAttribute("computer", computerDTO);
+		
+		request.setAttribute("errorResponse", Validator.errorResponse);
 		request.setAttribute("error", error);
 		request.setAttribute("companies", companies);
-		request.setAttribute("computer", computer);
 		request.setAttribute("search", search);
 		request.getRequestDispatcher("WEB-INF/editComputer.jsp").forward(request, response);
 	}
@@ -72,36 +79,21 @@ public class ModifyServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Computer computer=new Computer();
-		computer.setName(request.getParameter("name"));
-		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
-		if(request.getParameter("introducedDate")!=null&&request.getParameter("introducedDate")!="")
-			try {
-				computer.setIntroduced(new FrenchDate(format.parse(request.getParameter("introducedDate"))));
-			} catch (ParseException e) {
-				//ignore
-			}
-		if(request.getParameter("discontinuedDate")!=null&&request.getParameter("discontinuedDate")!="")
-			try {
-				computer.setDiscontinued(new FrenchDate(format.parse(request.getParameter("discontinuedDate"))));
-			} catch (ParseException e) {
-				//ignore
-			}
-		if(request.getParameter("company")!=null){
-			Company c=Company.builder()
-					.id(Long.parseLong(request.getParameter("company")))
-					.build();
-			computer.setCompany(c);
-		} 
+		Validator.validate(request);
 
-		computer.setId(id);
-
-		if(computerService.edit(computer)){
-			response.sendRedirect("DashboardServlet?search="+search);
-			error=false;
+		if(((Boolean)request.getAttribute("error")).equals(false)){
+			ComputerDTO computerDTO=(ComputerDTO)request.getAttribute("computer");
+			computerDTO.setId(id);
+			if(computerService.edit(computerDTO)){
+				response.sendRedirect("DashboardServlet?search="+search);
+				error=false;
+			}else{
+				this.computerDTO=computerDTO;
+				error=true;
+				doGet(request, response);
+			}
 		}else{
-			this.computer=computer;
-			error=true;
+			error=false;
 			doGet(request, response);
 		}
 	}

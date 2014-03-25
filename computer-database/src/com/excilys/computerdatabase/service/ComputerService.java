@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.excilys.computerdatabase.dao.ComputerDAO;
 import com.excilys.computerdatabase.dao.DAOFactory;
 import com.excilys.computerdatabase.dao.LogDAO;
+import com.excilys.computerdatabase.dto.ComputerDTO;
 import com.excilys.computerdatabase.om.Computer;
 import com.excilys.computerdatabase.om.Page;
 
@@ -77,30 +78,30 @@ public class ComputerService {
 		return success;
 	}
 
-	public Computer getComputer(long id){
-		Computer computer = null;
+	public ComputerDTO getComputer(long id){
+		ComputerDTO computerDTO = null;
 		logger.info("Select computer transaction");
 		factory.startTransaction();
 		if(!DAOFactory.getErrorTL().get()){
-			computer=computerDao.getComputer(id);
+			computerDTO=computerDao.getComputer(id);
 			if(!DAOFactory.getErrorTL().get())
 				logDao.add("Select",table, id);
 			factory.endTransaction();
 		}	
 		factory.closeConnection();
-		return computer;
+		return computerDTO;
 	}
 
-	public boolean add(Computer computer){
+	public boolean add(ComputerDTO computerDTO){
 		boolean success=true;
 		logger.info("Add transaction");
 		factory.startTransaction();
 		if(DAOFactory.getErrorTL().get()){
 			success=false;
 		}else{
-			computerDao.add( computer);
+			computerDao.add( computerDTO);
 			if(!DAOFactory.getErrorTL().get())
-				logDao.add("Add",table, computer.getId());
+				logDao.add("Add",table, computerDTO.getId());
 			factory.endTransaction();
 			if(DAOFactory.getErrorTL().get()){
 				success=false;			}
@@ -109,16 +110,16 @@ public class ComputerService {
 		return success;
 	}
 
-	public boolean edit(Computer computer){
+	public boolean edit(ComputerDTO computerDTO){
 		boolean success=true;
 		logger.info("Edit transaction");
 		factory.startTransaction();
 		if(DAOFactory.getErrorTL().get()){
 			success=false;
 		}else{
-			computerDao.edit(computer);
+			computerDao.edit(computerDTO);
 			if(!DAOFactory.getErrorTL().get())
-				logDao.add("Edit",table, computer.getId());
+				logDao.add("Edit",table, computerDTO.getId());
 			factory.endTransaction();
 			if(DAOFactory.getErrorTL().get()){
 				success=false;

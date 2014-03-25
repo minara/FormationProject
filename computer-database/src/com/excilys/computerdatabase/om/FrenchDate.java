@@ -3,7 +3,7 @@ package com.excilys.computerdatabase.om;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class FrenchDate extends Date {
+public class FrenchDate extends Date implements Comparable<Date>{
 	/**
 	 * 
 	 */
@@ -30,6 +30,6 @@ public class FrenchDate extends Date {
 		else
 			return super.toString();
 	}
-
+	
 
 }

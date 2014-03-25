@@ -46,13 +46,12 @@ public class DashboardServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		boolean delete;
 		Page<Computer> wrapper;
-		String nameSrc, introSrc, discoSrc, compSrc;
+		//String nameSrc, introSrc, discoSrc, compSrc;
 		ArrayList<String> source=new ArrayList<String>(4);
 		int i;
 		for(i=0; i<4;i++){
 			source.add("image/downgris.jpg");
 		}
-		System.out.println(source);
 		//nameSrc=introSrc=discoSrc=compSrc="image/downgris.jpg";
 		error =false;
 		

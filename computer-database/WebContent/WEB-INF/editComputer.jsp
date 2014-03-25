@@ -10,26 +10,29 @@
 			<div class="clearfix">
 				<label for="name">Computer name:</label>
 				<div class="input">
-					<input type="text" name="name" value="${computer.name}" data-validation="alphanumeric" data-validation-allowing=" -_/."/>
+					<input type="text" name="name" value="${computer.name}" data-validation="alphanumeric" 
+					data-validation-allowing=" -_/." data-validation-error-msg="${errorResponse[0]}"/>
 					<span class="help-inline">Required</span>
-					<div><c:out value=""></c:out></div>
+					<div class="help-block" style="color:red">${msgs[0]}</div>
 				</div>
 			</div>
 	
 			<div class="clearfix">
 				<label for="introduced">Introduced date:</label>
 				<div class="input">
-					<input type="date" name="introducedDate" value="${computer.introduced}" data-validation="pastdate" data-validation-optional="true"/>
+					<input id="introduced" type="date" name="introducedDate" value="${computer.introduced}" data-validation="pastdate"
+					 data-validation-optional="true" data-validation-error-msg="${errorResponse[1]}"/>
 					<span class="help-inline">YYYY-MM-DD</span>
-					<div><c:out value=""></c:out></div>
+					<div class="help-block" style="color:red">${msgs[1]}</div>
 				</div>
 			</div>
 			<div class="clearfix">
 				<label for="discontinued">Discontinued date:</label>
 				<div class="input">
-					<input type="date" name="discontinuedDate" value="${computer.discontinued}" data-validation="pastdate" data-validation-optional="true"/>
+					<input type="date" name="discontinuedDate" value="${computer.discontinued}" data-validation="limitdate" data-validation-limit="#introduced"
+					data-validation-optional="true" data-validation-error-msg="${errorResponse[2]}"/>
 					<span class="help-inline">YYYY-MM-DD</span>
-					<div><c:out value=""></c:out></div>
+					<div class="help-block" style="color:red">${msgs[2]}</div>
 				</div>
 			</div>
 			<div class="clearfix">
@@ -38,7 +41,7 @@
 					<select name="company">
 						<option value="0">--</option>
 						<c:forEach var="comp" items="${companies}">
-							<option value="${comp.id}" ${computer.company==comp ? 'selected' : ''}>${comp.name}</option>
+							<option value="${comp.id}" ${computer.companyId==comp.id ? 'selected' : ''}>${comp.name}</option>
 						</c:forEach>
 					</select>
 				</div>
@@ -76,8 +79,57 @@
 			}}else{
 				return year<currentYear;
 		}},
-		errorMessage:"incorrect date; the date must be in the past",
+		errorMessage:"Incorrect date; the date must be in the past",
 		errorMessageKey:""});
+
+	$.formUtils.addValidator({
+		name:"limitdate",
+		validatorFunction:function(val,$el,conf){
+			var dateFormat="yyyy-mm-dd";
+			if($el.valAttr("format")){dateFormat=$el.valAttr("format");}
+			else if(typeof conf.dateFormat!="undefined"){dateFormat=conf.dateFormat;}
+			var introduced=false;
+			if($el.valAttr("limit")){
+				var limit=$el.valAttr("limit");
+				var date=$(limit).val();
+				if(date!=""){
+					introduced=$.formUtils.parseDate(date,dateFormat);
+				}
+			}
+			var inputDate=$.formUtils.parseDate(val,dateFormat);
+			if(!inputDate){return false;}
+			var d=new Date;
+			var currentYear=d.getFullYear();
+			var year=inputDate[0];
+			var month=inputDate[1];
+			var day=inputDate[2];
+			if(year===currentYear){
+				var currentMonth=d.getMonth()+1;
+				if(month===currentMonth){
+					var currentDay=d.getDate();
+					if(day>currentDay){return false;}
+				}else if (month>currentMonth){ return false;}
+			}else if(year>currentYear){ return false;}
+			if (!introduced) { return true;} 
+			else {
+				var limitYear = introduced[0];
+				var limitMonth = introduced[1];
+				var limitDay = introduced[2];
+				if (year === limitYear) {
+					if (month === limitMonth) {
+						return day > limitDay;
+					} else {
+							return month > limitMonth;
+					}
+				} else {
+					return year>limitYear;
+				}
+			}
+
+		},
+		errorMessage : "",
+		errorMessageKey : ""
+		});
 	
 		$.validate();
 	</script>

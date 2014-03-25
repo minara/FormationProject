@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.excilys.computerdatabase.dto.ComputerDTO;
+import com.excilys.computerdatabase.mapper.ComputerMapper;
 import com.excilys.computerdatabase.om.Company;
 import com.excilys.computerdatabase.om.Computer;
 import com.excilys.computerdatabase.om.FrenchDate;
@@ -186,7 +188,7 @@ public class ComputerDAO {
 		wrapper.setObjects(computers);
 	}
 
-	public Computer getComputer(long id) {
+	public ComputerDTO getComputer(long id) {
 		Connection connection=null;
 		Computer computer=null;
 		PreparedStatement statement=null;
@@ -210,13 +212,14 @@ public class ComputerDAO {
 			closeObjects(results, statement, connection);
 		}
 
-		return computer;
+		return ComputerMapper.toDTO(computer);
 	}
 	
-	public void add(Computer computer){
+	public void add(ComputerDTO computerDTO){
 		Connection connection=null;
 		PreparedStatement statement=null;
 		ResultSet results=null;
+		Computer computer=ComputerMapper.fromDTO(computerDTO);
 		
 		logger.info("Adding a new computer");
 		try {
@@ -251,9 +254,10 @@ public class ComputerDAO {
 		
 	}
 	
-	public void edit( Computer computer) {
+	public void edit( ComputerDTO computerDTO) {
 		Connection connection=null;
 		PreparedStatement statement=null;
+		Computer computer=ComputerMapper.fromDTO(computerDTO);
 		
 		logger.info("Editing computer n°"+computer.getId());
 		try {
