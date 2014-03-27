@@ -15,9 +15,10 @@
 			</select>
 		</form>
 
-		<a class="btn success" id="add" href="AddComputerServlet">Add
-			Computer</a>
+		<p:link call="AddComputerServlet" search="${wrapper.name}" title="Add Computer" class="btn success" id="add" />
+		
 	</div>
+	
 
 	<table class="computers zebra-striped">
 		<thead>
@@ -26,26 +27,24 @@
 				<th></th>
 				<!-- Table header for Computer Name -->
 				<th>Computer Name
-					<a href="DashboardServlet?order=name&search=${wrapper.name}">
-							<img alt="^" src="<c:out value='${source[0]}' default='image/downnoir.jpg'></c:out>" style="height:15px; width:15px"/>
-						</a>
+				 <p:orderBy order="${wrapper.order}" type="NAME" asc="${wrapper.asc}" call="DashboardServlet" search="${wrapper.name}"
+				 title="^" style="height:15px; width:15px"/>
+
 				</th>
 				<th>Introduced Date
-					<a href="DashboardServlet?order=introduced&search=${wrapper.name}">
-							<img alt="^" src="<c:out value="${source[1]}"> </c:out>" style="height:15px; width:15px"/>
-						</a>
+				 <p:orderBy order="${wrapper.order}" type="INTRODUCED" asc="${wrapper.asc}" call="DashboardServlet" search="${wrapper.name}"
+				 title="^" style="height:15px; width:15px"/>
+					
 				</th>
 				<!-- Table header for Discontinued Date -->
 				<th>Discontinued Date
-					<a href="DashboardServlet?order=discontinued&search=${wrapper.name}">
-							<img alt="^" src="<c:out value="${source[2]}"> </c:out>" style="height:15px; width:15px"/>
-						</a>
+					 <p:orderBy order="${wrapper.order}" type="DISCONTINUED" asc="${wrapper.asc}" call="DashboardServlet" search="${wrapper.name}"
+				 title="^" style="height:15px; width:15px"/>
 				</th>
 				<!-- Table header for Company -->
 				<th>Company
-					<a href="DashboardServlet?order=company&search=${wrapper.name}">
-							<img alt="^" src="<c:out value="${source[3]}"> </c:out>" style="height:15px; width:15px"/>
-						</a>
+				 <p:orderBy order="${wrapper.order}" type="COMPANY" asc="${wrapper.asc}" call="DashboardServlet" search="${wrapper.name}"
+				 title="^" style="height:15px; width:15px"/>
 				</th>
 				<th></th>
 			</tr>
@@ -54,18 +53,16 @@
 			<c:forEach var="computer" items="${wrapper.objects}">
 				<tr>
 					<td class="col1">
-						<a href="ModifyServlet?computerId=${computer.id}&search=${wrapper.name}">
-							<img alt="Edit" src="image/boutonplume.jpg" style="height:25px; width:25px">
-						</a>
+						<p:link call="ModifyServlet" computerId="${computer.id}" delete="false" search="${wrapper.name}"
+						title="Edit" img="image/boutonplume.jpg" style="height:25px; width:25px"/>
 					</td>
 					<td>${computer.name}</td>
 					<td>${computer.introduced}</td>
 					<td>${computer.discontinued}</td>
 					<td>${computer.company.name}</td>
 					<td>
-						<a href="DashboardServlet?computerId=${computer.id}&delete=true&search=${wrapper.name}">
-							<img alt="Delete" src="image/boutondelete.jpg" style="height:25px; width:25px">
-						</a>
+						<p:link call="DashboardServlet" computerId="${computer.id}" delete="true" search="${wrapper.name}"
+						title="Delete" img="image/boutondelete.jpg" style="height:25px; width:25px"/>
 					</td>
 				</tr>
 			</c:forEach>

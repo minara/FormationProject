@@ -4,13 +4,13 @@ public enum Order {
 	NAME, INTRODUCED, DISCONTINUED, COMPANY;
 	
 	public static Order getOrder(String order){
-		if(order.equals("name"))
+		if(order.equals("NAME"))
 			return NAME;
-		else if(order.equals("introduced"))
+		else if(order.equals("INTRODUCED"))
 			return INTRODUCED;
-		else if(order.equals("discontinued"))
+		else if(order.equals("DISCONTINUED"))
 			return DISCONTINUED;
-		else if(order.equals("company"))
+		else if(order.equals("COMPANY"))
 			return COMPANY;
 		else return null;
 	}

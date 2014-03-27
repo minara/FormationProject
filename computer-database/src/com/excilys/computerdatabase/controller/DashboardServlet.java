@@ -1,10 +1,12 @@
 package com.excilys.computerdatabase.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,11 +23,7 @@ import com.excilys.computerdatabase.util.Order;
 public class DashboardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private ComputerService computerService;
-	private int searchDomain=0, limit=10, page=1;
-	private Order order=Order.NAME;
-	private boolean asc=true;
-	private Boolean error;
-
+	
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -36,7 +34,6 @@ public class DashboardServlet extends HttpServlet {
 
 	public void showErrorMsg(HttpServletRequest request) {
 		String errorMsg="An error has occured while treating your request. Please, try again.";
-		error=true;
 		request.setAttribute("errorMsg", errorMsg);
 	}
 
@@ -46,14 +43,15 @@ public class DashboardServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		boolean delete;
 		Page<Computer> wrapper;
-		//String nameSrc, introSrc, discoSrc, compSrc;
-		ArrayList<String> source=new ArrayList<String>(4);
-		int i;
-		for(i=0; i<4;i++){
-			source.add("image/downgris.jpg");
+		Boolean error =false, asc=true;
+		Order order=null;
+		String search=null;
+		int searchDomain=0, limit=10, page=1;
+		Cookie[] cookies=request.getCookies();
+		Map<String, String> cookieMap= new HashMap<String, String>();
+		for(Cookie c:cookies){
+			cookieMap.put(c.getName(), c.getValue());
 		}
-		//nameSrc=introSrc=discoSrc=compSrc="image/downgris.jpg";
-		error =false;
 		
 		if(request.getParameter("delete")!=null)
 			delete=Boolean.parseBoolean(request.getParameter("delete"));
@@ -61,73 +59,87 @@ public class DashboardServlet extends HttpServlet {
 		if(delete==true){
 			long computerId=Long.parseLong(request.getParameter("computerId"));
 			if(!computerService.delete(computerId)){
+				error=true;
 				showErrorMsg(request);
 			}
 		}
+		
+		if(request.getParameter("search")!=null){
+			search=request.getParameter("search");
+			Cookie cookie=new Cookie("search", search);
+			cookie.setMaxAge(-1); //to remove cookie when the browser is closed
+			response.addCookie(cookie);
+		}else if(cookieMap.containsKey("search")){
+			search=cookieMap.get("search");
+		}
 
-		if(request.getParameter("searchDomain")!=null)
+		if(request.getParameter("searchDomain")!=null&&request.getParameter("searchDomain")!=""){
 			searchDomain=Integer.parseInt(request.getParameter("searchDomain"));
+			Cookie cookie=new Cookie("searchDomain", Integer.toString(searchDomain));
+			response.addCookie(cookie);
+		}else if(cookieMap.containsKey("searchDomain")){
+			searchDomain=Integer.parseInt(cookieMap.get("searchDomain"));
+		}
 
-		if(request.getParameterValues("limitation")!=null)
+		if(request.getParameter("limitation")!=null&&request.getParameter("limitation")!=""){
 			limit=Integer.parseInt(request.getParameter("limitation"));
+			Cookie cookie=new Cookie("limit", Integer.toString(limit));
+			response.addCookie(cookie);
+		}else if (cookieMap.containsKey("limit")) {
+			limit=Integer.parseInt(cookieMap.get("limit"));
+		}
+		
+		if(cookieMap.containsKey("page")){
+			page=Integer.parseInt(cookieMap.get("page"));
+		}
+		
+		if(request.getParameter("asc")!=null&&request.getParameter("asc")!=""){
+			asc=Boolean.parseBoolean(request.getParameter("asc"));
+			Cookie cookie=new Cookie("asc", Boolean.toString(asc));
+			response.addCookie(cookie);
+		}else if (cookieMap.containsKey("asc")) {
+			asc=Boolean.parseBoolean(cookieMap.get("asc"));
+		}
 
 		Page.Builder<Computer> cb = new Page.Builder<Computer>();
-		wrapper= cb.name(request.getParameter("search"))
+		wrapper= cb.name(search)
 				.searchDomain(searchDomain)
 				.limit(limit)
 				.page(page)
+				.asc(asc)
 				.build();
 
-		if(request.getParameter("page")!=null){
+		if(request.getParameter("page")!=null&&request.getParameter("page")!=""){
 			wrapper.setNewPage(Integer.parseInt(request.getParameter("page")));
 		}
 
-		if(request.getParameter("order")!=null){
-			Order o=Order.getOrder(request.getParameter("order"));
-			if(order.equals(o)){
-				asc=!(asc);
-			}else if(o!=null){
-				order=o;
-				asc=true;
-			}
+		if(request.getParameter("order")!=null&&request.getParameter("order")!=""){
+			order=Order.getOrder(request.getParameter("order"));
+			Cookie cookie=new Cookie("order", order.toString());
+			response.addCookie(cookie);
+		}else if (cookieMap.containsKey("order")){
+			order=Order.getOrder(cookieMap.get("order"));
+		}else{
+			order=Order.NAME;
 		}
+		
 		try{
 			wrapper.setOrder(order);
 		}catch (Exception e){
 			System.out.println("Choosen order is impossible");
 		}
-		wrapper.setAsc(asc);
-		switch(order){
-		case NAME:
-			if(asc) source.set(0,"image/downnoir.jpg");
-			else source.set(0,"image/upnoir.jpg");
-			break;
-		case INTRODUCED:
-			if(asc) source.set(1,"image/downnoir.jpg");
-			else source.set(1,"image/upnoir.jpg");
-			break;
-		case DISCONTINUED:
-			if(asc) source.set(2,"image/downnoir.jpg");
-			else source.set(2,"image/upnoir.jpg");
-			break;
-		case COMPANY:
-			if(asc) source.set(3,"image/downnoir.jpg");
-			else source.set(3,"image/upnoir.jpg");
-			break;
-		default:
-			break;
-		}
-
-		if(!computerService.search(wrapper))
+		
+		if(!computerService.search(wrapper)){
+			error=true;
 			showErrorMsg(request);
-		page=wrapper.getPage();
+		}
+		if(wrapper.getPage()>0){
+			page=wrapper.getPage();
+			Cookie cookie=new Cookie("page", Integer.toString(page));
+			response.addCookie(cookie);
+		}
 		request.setAttribute("error", error);
 		request.setAttribute("wrapper", wrapper);
-		request.setAttribute("source", source);
-		/*request.setAttribute("nameSrc", nameSrc);
-		request.setAttribute("introSrc", introSrc);
-		request.setAttribute("discoSrc", discoSrc);
-		request.setAttribute("compSrc", compSrc);*/
 		request.getRequestDispatcher("WEB-INF/dashboard.jsp").forward(request, response);
 	}
 

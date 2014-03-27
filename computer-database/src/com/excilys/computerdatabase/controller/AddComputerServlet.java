@@ -1,8 +1,6 @@
 package com.excilys.computerdatabase.controller;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,9 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.computerdatabase.dto.ComputerDTO;
+import com.excilys.computerdatabase.mapper.ComputerMapper;
 import com.excilys.computerdatabase.om.Company;
 import com.excilys.computerdatabase.om.Computer;
-import com.excilys.computerdatabase.om.FrenchDate;
 import com.excilys.computerdatabase.service.CompanyService;
 import com.excilys.computerdatabase.service.ComputerService;
 import com.excilys.computerdatabase.util.Validator;
@@ -28,7 +26,6 @@ public class AddComputerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private CompanyService companyService;
 	private ComputerService computerService;
-	private boolean error=false;
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -43,15 +40,20 @@ public class AddComputerServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		List<Company> companies=new ArrayList<Company>();
-
 		companies=companyService.getCompanies();
+		
+		Boolean error=false;
+		if(request.getAttribute("error")!=null)
+			error=(Boolean) request.getAttribute("error");
+		else
+			request.setAttribute("error", error);
+		
 		if(error){
 			String errorMsg="An error has occured while treating your request. Please, try again.";
 			request.setAttribute("errorMsg", errorMsg);
 		}
 
 		request.setAttribute("errorResponse", Validator.errorResponse);
-		request.setAttribute("error", error);
 		request.setAttribute("companies", companies);
 		request.getRequestDispatcher("WEB-INF/addComputer.jsp").forward(request, response);
 	}
@@ -61,18 +63,19 @@ public class AddComputerServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		Validator.validate(request);
+		Boolean error=(Boolean)request.getAttribute("error");
 
-		if(((Boolean)request.getAttribute("error")).equals(false)){
+		if(!error){
 			ComputerDTO computerDTO=(ComputerDTO)request.getAttribute("computer");
-			if(computerService.add(computerDTO)){
-				error=false;
+			Computer computer=ComputerMapper.fromDTO(computerDTO);
+			if(computerService.add(computer)){
 				response.sendRedirect("DashboardServlet");
 			}else{
-				error=true;
+				request.setAttribute("error", true);
 				doGet(request, response);
 			}
 		}else{
-			error=false;
+			request.setAttribute("error", false);
 			doGet(request, response);
 		}
 

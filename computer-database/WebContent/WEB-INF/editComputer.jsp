@@ -1,5 +1,6 @@
 <jsp:include page="include/header.jsp" />
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="p" tagdir="/WEB-INF/tags"%>
 
 <section id="main">
 
@@ -46,10 +47,12 @@
 					</select>
 				</div>
 			</div>
+			<input type="hidden" name="computerId" value="${computerId}">
+			<input type="hidden" name="search" value="${search}">
 		</fieldset>
 		<div class="actions">
 			<input type="submit" value="Edit" class="btn primary">
-			or <a href="DashboardServlet?search=${search}" class="btn">Cancel</a>
+			or <p:link call="DashboardServlet" search="${search}" title="Cancel" class="btn" />
 		</div>
 	</form>
 	<script type="text/javascript">if('${error}'==='true'){alert('${errorMsg}');}</script> 

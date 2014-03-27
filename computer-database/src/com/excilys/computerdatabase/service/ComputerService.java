@@ -28,27 +28,6 @@ public class ComputerService {
 		return cs;
 	} 
 
-	public boolean count(Page<Computer> wrapper) {
-		boolean success=true;
-		logger.info("Count transaction");
-
-		factory.startTransaction();
-		if(DAOFactory.getErrorTL().get()){
-			success=false;
-		}else{
-			computerDao.count( wrapper);
-			if(!DAOFactory.getErrorTL().get())
-				logDao.add("Count",table, -1);
-			factory.endTransaction();
-			if(DAOFactory.getErrorTL().get()){
-				success=false;
-			}
-		}
-
-		factory.closeConnection();
-		return success;
-	}
-
 	public boolean search(Page<Computer> wrapper){
 		boolean success=true;
 		logger.info("Count and search transaction");
@@ -92,16 +71,16 @@ public class ComputerService {
 		return computerDTO;
 	}
 
-	public boolean add(ComputerDTO computerDTO){
+	public boolean add(Computer computer){
 		boolean success=true;
 		logger.info("Add transaction");
 		factory.startTransaction();
 		if(DAOFactory.getErrorTL().get()){
 			success=false;
 		}else{
-			computerDao.add( computerDTO);
+			computerDao.add( computer);
 			if(!DAOFactory.getErrorTL().get())
-				logDao.add("Add",table, computerDTO.getId());
+				logDao.add("Add",table, computer.getId());
 			factory.endTransaction();
 			if(DAOFactory.getErrorTL().get()){
 				success=false;			}
@@ -110,16 +89,16 @@ public class ComputerService {
 		return success;
 	}
 
-	public boolean edit(ComputerDTO computerDTO){
+	public boolean edit(Computer computer){
 		boolean success=true;
 		logger.info("Edit transaction");
 		factory.startTransaction();
 		if(DAOFactory.getErrorTL().get()){
 			success=false;
 		}else{
-			computerDao.edit(computerDTO);
+			computerDao.edit(computer);
 			if(!DAOFactory.getErrorTL().get())
-				logDao.add("Edit",table, computerDTO.getId());
+				logDao.add("Edit",table, computer.getId());
 			factory.endTransaction();
 			if(DAOFactory.getErrorTL().get()){
 				success=false;

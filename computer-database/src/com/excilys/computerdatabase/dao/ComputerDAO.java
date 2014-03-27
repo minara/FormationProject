@@ -215,11 +215,10 @@ public class ComputerDAO {
 		return ComputerMapper.toDTO(computer);
 	}
 	
-	public void add(ComputerDTO computerDTO){
+	public void add(Computer computer){
 		Connection connection=null;
 		PreparedStatement statement=null;
 		ResultSet results=null;
-		Computer computer=ComputerMapper.fromDTO(computerDTO);
 		
 		logger.info("Adding a new computer");
 		try {
@@ -254,10 +253,9 @@ public class ComputerDAO {
 		
 	}
 	
-	public void edit( ComputerDTO computerDTO) {
+	public void edit( Computer computer) {
 		Connection connection=null;
 		PreparedStatement statement=null;
-		Computer computer=ComputerMapper.fromDTO(computerDTO);
 		
 		logger.info("Editing computer n°"+computer.getId());
 		try {

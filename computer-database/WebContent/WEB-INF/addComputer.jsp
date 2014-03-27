@@ -1,5 +1,6 @@
 <jsp:include page="include/header.jsp" />
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+<%@ taglib prefix="p" tagdir="/WEB-INF/tags"%>
 
 <section id="main">
 
@@ -49,7 +50,7 @@
 		</fieldset>
 		<div class="actions">
 			<input type="submit" value="Add" class="btn primary">
-			or <a href="DashboardServlet" class="btn">Cancel</a>
+			or <p:link call="DashboardServlet" title="Cancel" class="btn" />
 		</div>
 	</form>
 	<script type="text/javascript">if('${error}'==='true'){alert('${errorMsg}');}</script> 
