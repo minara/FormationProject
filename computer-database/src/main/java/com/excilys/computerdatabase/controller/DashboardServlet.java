@@ -67,7 +67,7 @@ public class DashboardServlet extends HttpServlet {
 		if(request.getParameter("search")!=null){
 			search=request.getParameter("search");
 			Cookie cookie=new Cookie("search", search);
-			cookie.setMaxAge(-1); //to remove cookie when the browser is closed
+			cookie.setMaxAge(10*60); 
 			response.addCookie(cookie);
 		}else if(cookieMap.containsKey("search")){
 			search=cookieMap.get("search");
