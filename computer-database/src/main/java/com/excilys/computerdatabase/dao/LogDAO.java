@@ -11,19 +11,23 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class LogDAO {
-	private final static LogDAO ld=new LogDAO();
+	//private final static LogDAO ld=new LogDAO();
 	final Logger logger= LoggerFactory.getLogger(LogDAO.class);
+	@Autowired
 	private DAOFactory factory;
 
-	private LogDAO() {
-		factory=DAOFactory.FACTORY;
+	public LogDAO() {
+		//factory=DAOFactory.FACTORY;
 	}
 	
-	public static LogDAO getInstance(){
+	/*public static LogDAO getInstance(){
 		return ld;
-	}
+	}*/
 	
 	private void closeConnections(ResultSet rs, Statement stmt,Connection connection){
 		try {

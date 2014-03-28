@@ -52,7 +52,7 @@
 		</fieldset>
 		<div class="actions">
 			<input type="submit" value="Edit" class="btn primary">
-			or <p:link call="DashboardServlet" search="${search}" title="Cancel" class="btn" />
+			or <p:link call="DashboardServlet" title="Cancel" class="btn" />
 		</div>
 	</form>
 	<script type="text/javascript">if('${error}'==='true'){alert('${errorMsg}');}</script> 

@@ -2,6 +2,8 @@ package com.excilys.computerdatabase.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.excilys.computerdatabase.dao.ComputerDAO;
 import com.excilys.computerdatabase.dao.DAOFactory;
@@ -10,23 +12,27 @@ import com.excilys.computerdatabase.dto.ComputerDTO;
 import com.excilys.computerdatabase.om.Computer;
 import com.excilys.computerdatabase.om.Page;
 
+@Service
 public class ComputerService {
-	private final static ComputerService cs=new ComputerService();
+	//private final static ComputerService cs=new ComputerService();
 	private final Logger logger=LoggerFactory.getLogger(ComputerService.class);
+	@Autowired
 	private ComputerDAO computerDao;
+	@Autowired
 	private LogDAO logDao;
+	@Autowired
 	private DAOFactory factory;
 	private String table="computer";
 
-	private ComputerService() {
-		computerDao=ComputerDAO.getInstance();
+	public ComputerService() {
+		/*computerDao=ComputerDAO.getInstance();
 		logDao=LogDAO.getInstance();
-		factory=DAOFactory.FACTORY;
+		factory=DAOFactory.FACTORY;*/
 	}
 
-	public static ComputerService getInstance(){
+	/*public static ComputerService getInstance(){
 		return cs;
-	} 
+	} */
 
 	public boolean search(Page<Computer> wrapper){
 		boolean success=true;

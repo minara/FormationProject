@@ -13,6 +13,8 @@ import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.excilys.computerdatabase.dto.ComputerDTO;
 import com.excilys.computerdatabase.mapper.ComputerMapper;
@@ -21,18 +23,20 @@ import com.excilys.computerdatabase.om.Computer;
 import com.excilys.computerdatabase.om.FrenchDate;
 import com.excilys.computerdatabase.om.Page;
 
+@Repository
 public class ComputerDAO {
-	private final static ComputerDAO cd=new ComputerDAO();
+	//private final static ComputerDAO cd=new ComputerDAO();
 	final Logger logger=LoggerFactory.getLogger(ComputerDAO.class);
+	@Autowired
 	private DAOFactory factory;
 
-	private ComputerDAO() {
-		factory=DAOFactory.FACTORY;
+	public ComputerDAO() {
+		//factory=DAOFactory.FACTORY;
 	}
 
-	public static ComputerDAO getInstance() {
+	/*public static ComputerDAO getInstance() {
 		return cd;
-	}
+	}*/
 
 	private void closeObjects(ResultSet rs, Statement stmt, Connection connection){
 		try {

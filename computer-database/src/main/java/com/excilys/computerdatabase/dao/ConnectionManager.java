@@ -3,9 +3,12 @@ package com.excilys.computerdatabase.dao;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.springframework.stereotype.Component;
+
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
+@Component
 public class ConnectionManager {
 	private final static ConnectionManager cm= new ConnectionManager();
 	private String driver="com.mysql.jdbc.Driver";

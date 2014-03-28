@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import com.excilys.computerdatabase.dto.ComputerDTO;
 import com.excilys.computerdatabase.mapper.ComputerMapper;
 import com.excilys.computerdatabase.om.Company;
@@ -24,7 +27,9 @@ import com.excilys.computerdatabase.util.Validator;
 @WebServlet("/ModifyServlet")
 public class ModifyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	@Autowired
 	private CompanyService companyService;
+	@Autowired
 	private ComputerService computerService;
 
 
@@ -33,10 +38,14 @@ public class ModifyServlet extends HttpServlet {
 	 */
 	public ModifyServlet() {
 		super();
-		companyService= CompanyService.getInstance();
-		computerService=ComputerService.getInstance();
 	}
 
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, getServletContext());
+	}
+	
 	public void showErrorMsg(HttpServletRequest request) {
 		String errorMsg="An error has occured while treating your request. Please, try again.";
 		request.setAttribute("errorMsg", errorMsg);
@@ -56,7 +65,6 @@ public class ModifyServlet extends HttpServlet {
 			error=(Boolean) request.getAttribute("error");
 		else
 			request.setAttribute("error", error);
-		String search=request.getParameter("search");
 
 		companies=companyService.getCompanies();
 		if(error){
@@ -66,7 +74,6 @@ public class ModifyServlet extends HttpServlet {
 			request.setAttribute("computer", computerDTO);
 		}
 		
-		request.setAttribute("search", search);
 		request.setAttribute("errorResponse", Validator.errorResponse);
 		request.setAttribute("companies", companies);
 		request.getRequestDispatcher("WEB-INF/editComputer.jsp").forward(request, response);
@@ -80,14 +87,13 @@ public class ModifyServlet extends HttpServlet {
 		long id=0;
 		if(request.getParameter("computerId")!=null)
 			id=Long.parseLong(request.getParameter("computerId"));
-		String search=request.getParameter("search");
 
 		if(((Boolean)request.getAttribute("error")).equals(false)){
 			ComputerDTO computerDTO=(ComputerDTO)request.getAttribute("computer");
 			computerDTO.setId(id);
 			Computer computer=ComputerMapper.fromDTO(computerDTO);
 			if(computerService.edit(computer)){
-				response.sendRedirect("DashboardServlet?search="+search);
+				response.sendRedirect("DashboardServlet");
 			}else{
 				request.setAttribute("error", true);
 				doGet(request, response);

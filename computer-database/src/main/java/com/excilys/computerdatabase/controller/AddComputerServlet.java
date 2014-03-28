@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import com.excilys.computerdatabase.dto.ComputerDTO;
 import com.excilys.computerdatabase.mapper.ComputerMapper;
 import com.excilys.computerdatabase.om.Company;
@@ -24,15 +27,21 @@ import com.excilys.computerdatabase.util.Validator;
 @WebServlet("/AddComputerServlet")
 public class AddComputerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	@Autowired
 	private CompanyService companyService;
+	@Autowired
 	private ComputerService computerService;
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public AddComputerServlet() {
 		super();
-		companyService= CompanyService.getInstance();
-		computerService=ComputerService.getInstance();
+	}
+	
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, getServletContext());
 	}
 
 	/**

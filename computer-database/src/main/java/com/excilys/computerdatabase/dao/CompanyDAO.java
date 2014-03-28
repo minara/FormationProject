@@ -10,21 +10,25 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.excilys.computerdatabase.om.Company;
 
+@Repository
 public class CompanyDAO {
-	private final static CompanyDAO cd=new CompanyDAO();
+	//private final static CompanyDAO cd=new CompanyDAO();
 	final Logger logger= LoggerFactory.getLogger(CompanyDAO.class);
+	@Autowired
 	private DAOFactory factory;
 
-	private CompanyDAO() {
-		factory=DAOFactory.FACTORY;
+	public CompanyDAO() {
+		//factory=DAOFactory.FACTORY;
 	}
 	
-	public static CompanyDAO getInstance() {
+	/*public static CompanyDAO getInstance() {
 		return cd;
-	}
+	}*/
 
 	private Company createCompany(ResultSet rs) throws SQLException {
 		Company c=Company.builder()

@@ -5,17 +5,19 @@ import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public enum DAOFactory {
-	FACTORY;
-
+@Component
+public class DAOFactory {
+	@Autowired
 	private ConnectionManager connectionManager;
 	private static ThreadLocal<Connection> connectionTL=new ThreadLocal<Connection>();
 	private static ThreadLocal<Boolean> errorTL=new ThreadLocal<Boolean>();
 	private final Logger logger=LoggerFactory.getLogger(DAOFactory.class);
 
 	private DAOFactory(){
-		connectionManager=ConnectionManager.getInstance();
+		/*connectionManager=ConnectionManager.getInstance();*/
 	}
 
 	public Connection getConnection(){
