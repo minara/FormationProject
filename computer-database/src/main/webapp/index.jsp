@@ -1,3 +1,3 @@
 <%
-response.sendRedirect("DashboardServlet");
+response.sendRedirect("./dashboard");
 %>
