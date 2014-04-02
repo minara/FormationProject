@@ -5,13 +5,12 @@
 <%@ attribute name="search" %>
 
 <div>
-		<a class="btn small" href="DashboardServlet?page=1&search=${search}">First</a>
-		<a class="btn small" href="DashboardServlet?page=${pageNumber-1}&search=${search}">Prec.</a>
+		<a class="btn small" href="./dashboard?page=1">First</a>
+		<a class="btn small" href="./dashboard?page=${pageNumber-1}">Prec.</a>
 		<span>${pageNumber}/${lastPage}</span>
-		<a class="btn small" href="DashboardServlet?page=${pageNumber+1}&search=${search}">Next</a>
-		<a class="btn small" href="DashboardServlet?page=${lastPage}&search=${search}">Last</a>
-		<form action="" method="get" >
-			<input type="hidden" name="search" value="${search}">
+		<a class="btn small" href="./dashboard?page=${pageNumber+1}">Next</a>
+		<a class="btn small" href="./dashboard?page=${lastPage}">Last</a>
+		<form action="./dashboard/limit" method="get" >
 			<select name="limitation">
 				<option value="10" ${perPage==10 ? 'selected' : ''}>10 per page</option>
 				<option value="20" ${perPage==20 ? 'selected' : ''} >20 per page</option>

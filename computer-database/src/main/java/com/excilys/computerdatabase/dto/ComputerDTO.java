@@ -1,19 +1,32 @@
 package com.excilys.computerdatabase.dto;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.excilys.computerdatabase.util.PastDate;
+
 
 public class ComputerDTO {
+	@Min(0)
 	private long   id;
+	@NotBlank(message="This field is required;")
+	@Pattern(regexp="\\w+[\\w\\s\\./\\-]*",message="the answer you give must contain only alphanumeric characters and -_/. and spaces")
 	private String name;
+	@PastDate(message="Incorrect date; the date must be in the past")
 	private String introduced;
+	@PastDate(message="Incorrect date; the date must be in the past")
 	private String discontinued;
+	@Min(0)
 	private long   companyId;
 
 	public ComputerDTO() {
-		this.id=-1;
+		this.id=0;
 		this.name=null;
 		this.introduced=null;
 		this.discontinued=null;
-		this.companyId=-1;
+		this.companyId=0;
 	}
 	
 	public static class Builder{

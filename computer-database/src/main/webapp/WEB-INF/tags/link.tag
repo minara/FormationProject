@@ -7,13 +7,12 @@
 <%@ attribute name="limit"%>
 <%@ attribute name="order"%>
 <%@ attribute name="asc"%>
-<%@ attribute name="delete"%>
 <%@ attribute name="computerId"%>
 <%@ attribute name="title"%>
 <%@ attribute name="img"%>
 <%@ attribute name="style"%>
 
-<a href="${call}?search=${search}&searchDomain=${searchDomain}&page=${page}&limit=${limit}&order=${order}&asc=${asc}&computerId=${computerId}&delete=${delete}"
+<a href="${call}?search=${search}&searchDomain=${searchDomain}&page=${page}&limit=${limit}&order=${order}&asc=${asc}&computerId=${computerId}"
 	<c:forEach items="${dynattrs}" var="dyn">
 		${dyn.key}="${dyn.value}"
 	</c:forEach>

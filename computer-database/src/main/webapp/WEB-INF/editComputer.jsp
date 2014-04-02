@@ -1,60 +1,58 @@
 <jsp:include page="include/header.jsp" />
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <section id="main">
 
 	<h1>Edit Computer</h1>
 	
-	<form action="" method="POST">
+	<form:form modelAttribute="computerDTO" action="/computer-database/Computer" method="POST">
 		<fieldset>
 			<div class="clearfix">
 				<label for="name">Computer name:</label>
 				<div class="input">
-					<input type="text" name="name" value="${computer.name}" data-validation="alphanumeric" 
+					<form:input path="name" type="text" name="name" value="${computer.name}" data-validation="alphanumeric" 
 					data-validation-allowing=" -_/." data-validation-error-msg="${errorResponse[0]}"/>
 					<span class="help-inline">Required</span>
-					<div class="help-block" style="color:red">${msgs[0]}</div>
+					<div class="help-block" style="color:red"><form:errors path="name"></form:errors> </div>
 				</div>
 			</div>
 	
 			<div class="clearfix">
 				<label for="introduced">Introduced date:</label>
 				<div class="input">
-					<input id="introduced" type="date" name="introducedDate" value="${computer.introduced}" data-validation="pastdate"
-					 data-validation-optional="true" data-validation-error-msg="${errorResponse[1]}"/>
+					<form:input path="introduced" id="introduced" type="date" name="introducedDate" value="${computer.introduced}" data-validation="pastdate" 
+					data-validation-optional="true" data-validation-error-msg="${errorResponse[1]}"/>
 					<span class="help-inline">YYYY-MM-DD</span>
-					<div class="help-block" style="color:red">${msgs[1]}</div>
+					<div class="help-block" style="color:red"><form:errors path="introduced"></form:errors> </div>
 				</div>
 			</div>
 			<div class="clearfix">
 				<label for="discontinued">Discontinued date:</label>
 				<div class="input">
-					<input type="date" name="discontinuedDate" value="${computer.discontinued}" data-validation="limitdate" data-validation-limit="#introduced"
+					<form:input path="discontinued" type="date" name="discontinuedDate" value="${computer.discontinued}" data-validation="limitdate"  data-validation-limit="#introduced"
 					data-validation-optional="true" data-validation-error-msg="${errorResponse[2]}"/>
 					<span class="help-inline">YYYY-MM-DD</span>
-					<div class="help-block" style="color:red">${msgs[2]}</div>
+					<div class="help-block" style="color:red"><form:errors path="discontinued"></form:errors> </div>
 				</div>
 			</div>
 			<div class="clearfix">
 				<label for="company">Company Name:</label>
 				<div class="input">
-					<select name="company">
-						<option value="0">--</option>
-						<c:forEach var="comp" items="${companies}">
-							<option value="${comp.id}" ${computer.companyId==comp.id ? 'selected' : ''}>${comp.name}</option>
-						</c:forEach>
-					</select>
+					<form:select path="companyId" name="company">
+						<form:option value="0" label="--"/>
+						<form:options items="${companies}" itemValue="id" itemLabel="name"/>
+					</form:select>
 				</div>
 			</div>
-			<input type="hidden" name="computerId" value="${computerId}">
-			<input type="hidden" name="search" value="${search}">
+			<form:hidden path="id"/>
 		</fieldset>
 		<div class="actions">
 			<input type="submit" value="Edit" class="btn primary">
-			or <p:link call="DashboardServlet" title="Cancel" class="btn" />
+			or <p:link call="/computer-database/dashboard" title="Cancel" class="btn" />
 		</div>
-	</form>
+	</form:form>
 	<script type="text/javascript">if('${error}'==='true'){alert('${errorMsg}');}</script> 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>

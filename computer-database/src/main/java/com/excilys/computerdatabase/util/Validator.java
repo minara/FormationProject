@@ -9,7 +9,8 @@ import com.excilys.computerdatabase.dto.ComputerDTO;
 import com.excilys.computerdatabase.om.FrenchDate;
 
 public class Validator {
-	public final static String[] errorResponse={"This field is required; the answer you give must contain only alphanumeric characters and -_/. and spaces","Incorrect date; the date must be in the past","Incorrect date; the date must be in the past and  more recent than the introduced date"};
+	public final static String[] errorResponse={"This field is required; the answer you give must contain only alphanumeric characters and -_/. and spaces",
+		"Incorrect date; the date must be in the past","Incorrect date; the date must be in the past and  more recent than the introduced date"};
 
 	public Validator() {
 	}

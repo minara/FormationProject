@@ -192,7 +192,7 @@ public class ComputerDAO {
 		wrapper.setObjects(computers);
 	}
 
-	public ComputerDTO getComputer(long id) {
+	public Computer getComputer(long id) {
 		Connection connection=null;
 		Computer computer=null;
 		PreparedStatement statement=null;
@@ -216,7 +216,7 @@ public class ComputerDAO {
 			closeObjects(results, statement, connection);
 		}
 
-		return ComputerMapper.toDTO(computer);
+		return computer;
 	}
 	
 	public void add(Computer computer){

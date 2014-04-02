@@ -63,18 +63,18 @@ public class ComputerService {
 		return success;
 	}
 
-	public ComputerDTO getComputer(long id){
-		ComputerDTO computerDTO = null;
+	public Computer getComputer(long id){
+		Computer computer = null;
 		logger.info("Select computer transaction");
 		factory.startTransaction();
 		if(!DAOFactory.getErrorTL().get()){
-			computerDTO=computerDao.getComputer(id);
+			computer=computerDao.getComputer(id);
 			if(!DAOFactory.getErrorTL().get())
 				logDao.add("Select",table, id);
 			factory.endTransaction();
 		}	
 		factory.closeConnection();
-		return computerDTO;
+		return computer;
 	}
 
 	public boolean add(Computer computer){

@@ -6,12 +6,12 @@
 <title>EPF Computer Database</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
-<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="css/main.css" rel="stylesheet" media="screen">
+<link href="/computer-database/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="/computer-database/css/main.css" rel="stylesheet" media="screen">
 </head>
 <body>
 	<header class="topbar">
 		<h1 class="fill">
-			<a href="dashboard.jsp"> Application - Computer Database </a>
+			<a href="/computer-database/dashboard"> Application - Computer Database </a>
 		</h1>
 	</header>
