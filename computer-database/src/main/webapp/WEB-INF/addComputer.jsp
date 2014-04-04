@@ -2,43 +2,56 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <section id="main">
 
-	<h1>Add Computer</h1>
+	<h1><spring:message code="add" text="default text" />
+		<span id="language"> <a href="?language=en">English</a>|<a href="?language=fr">Français</a></span>
+	</h1>
+	
+	<c:set var="nameError">
+		<spring:message code="name.error" text="default text" />
+	</c:set>
+	<c:set var="introError">
+		<spring:message code="intro.error" text="default text" />
+	</c:set>
+	<c:set var="discoError">
+		<spring:message code="disco.error" text="default text" />
+	</c:set>
 	
 	<form:form modelAttribute="computerDTO" action="./Computer" method="POST" id="addForm">
 		<fieldset>
 			<div class="clearfix">
-				<label for="name">Computer name:</label>
+				<label for="name"><spring:message code="name" text="default text" />:</label>
 				<div class="input">
 					<form:input path="name" type="text" name="name" value="${computer.name}" data-validation="alphanumeric" 
-					data-validation-allowing=" -_/." data-validation-error-msg="${errorResponse[0]}"/>
-					<span class="help-inline">Required</span>
+					data-validation-allowing=" -_/." data-validation-error-msg="${nameError}"/>
+					<span class="help-inline"><spring:message code="required" text="default text" /></span>
 					<div class="help-block" style="color:red"><form:errors path="name"/></div>
 				</div>
 			</div>
 	
 			<div class="clearfix">
-				<label for="introduced">Introduced date:</label>
+				<label for="introduced"><spring:message code="introduced" text="default text" />:</label>
 				<div class="input">
 					<form:input path="introduced" id="introduced" type="date" name="introducedDate" value="${computer.introduced}" data-validation="pastdate" 
-					data-validation-optional="true" data-validation-error-msg="${errorResponse[1]}"/>
+					data-validation-optional="true" data-validation-error-msg="${introError}"/>
 					<span class="help-inline">YYYY-MM-DD</span>
 					<div class="help-block" style="color:red"><form:errors path="introduced"></form:errors></div>
 				</div>
 			</div>
 			<div class="clearfix">
-				<label for="discontinued">Discontinued date:</label>
+				<label for="discontinued"><spring:message code="discontinued" text="default text" />:</label>
 				<div class="input">
 					<form:input path="discontinued" type="date" name="discontinuedDate" value="${computer.discontinued}" data-validation="limitdate"  data-validation-limit="#introduced"
-					data-validation-optional="true" data-validation-error-msg="${errorResponse[2]}"/>
+					data-validation-optional="true" data-validation-error-msg="${discoError}"/>
 					<span class="help-inline">YYYY-MM-DD</span>
 					<div class="help-block" style="color:red"><form:errors path="discontinued"></form:errors></div>
 				</div>
 			</div>
 			<div class="clearfix">
-				<label for="company">Company Name:</label>
+				<label for="company"><spring:message code="companyName" text="default text" />:</label>
 				<div class="input">
 					<form:select path="companyId" name="company">
 						<form:option value="0" label="--"/>
@@ -48,8 +61,10 @@
 			</div>
 		</fieldset>
 		<div class="actions">
-			<input type="submit" value="Add" class="btn primary">
-			or <p:link call="./dashboard" title="Cancel" class="btn" />
+			<input type="submit" value="<spring:message code="add2" text="default text" />" class="btn primary">
+			or 
+			<c:set var="spmsg"><spring:message code="cancel" text="default text" /></c:set>
+			<p:link call="./dashboard" title="${spmsg}" class="btn" />
 		</div>
 	</form:form>
 	<script type="text/javascript">if('${error}'==='true'){alert('${errorMsg}');}</script> 
@@ -131,7 +146,7 @@
 		errorMessageKey : ""
 		});
 
-		$.validate();
+		//$.validate();
 	</script>
 </section>
 

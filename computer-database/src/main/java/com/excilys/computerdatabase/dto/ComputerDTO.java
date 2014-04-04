@@ -11,12 +11,12 @@ import com.excilys.computerdatabase.util.PastDate;
 public class ComputerDTO {
 	@Min(0)
 	private long   id;
-	@NotBlank(message="This field is required;")
-	@Pattern(regexp="\\w+[\\w\\s\\./\\-]*",message="the answer you give must contain only alphanumeric characters and -_/. and spaces")
+	@NotBlank
+	@Pattern(regexp="\\w+[\\w\\s\\./\\-]*")
 	private String name;
-	@PastDate(message="Incorrect date; the date must be in the past")
+	@PastDate
 	private String introduced;
-	@PastDate(message="Incorrect date; the date must be in the past")
+	@PastDate
 	private String discontinued;
 	@Min(0)
 	private long   companyId;

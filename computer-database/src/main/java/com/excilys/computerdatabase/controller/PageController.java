@@ -28,10 +28,13 @@ public class PageController {
 			@CookieValue(value="limit", defaultValue="10") String limit, @CookieValue(value="page", defaultValue="1") String page, 
 			@CookieValue(value="order", defaultValue="NAME") String order, @CookieValue(value="asc", defaultValue="true") String asc,
 			@RequestParam(value="page", required=false) String newPage, HttpServletResponse response,
-			@ModelAttribute("error") String err){
+			@ModelAttribute("error") String err, @ModelAttribute("action") String action){
 		Boolean error=false;
-		if(err!=null&&err!="")
+		if(!err.isEmpty())
 			error=Boolean.parseBoolean(err);
+		String topMessage="welcome";
+		if(!action.isEmpty())
+			topMessage=action;
 		Page.Builder<Computer> cb = new Page.Builder<Computer>();
 		Page<Computer> wrapper= cb.name(search).searchDomain(Integer.parseInt(searchDomain)).limit(Integer.parseInt(limit))
 				.page(Integer.parseInt(page)).asc(Boolean.parseBoolean(asc)).build();
@@ -51,8 +54,10 @@ public class PageController {
 			response.addCookie(cookie);
 		}
 		
+		
 		ModelAndView result = new ModelAndView();
 		result.setViewName("dashboard");
+		result.addObject("topMessage", topMessage);
 		result.addObject("wrapper", wrapper);
 		result.addObject("error", error);
 		result.addObject("errorMsg","An error has occured while treating your request. Please, try again.");
@@ -61,7 +66,6 @@ public class PageController {
 	
 	@RequestMapping("/search")
 	public ModelAndView changeSearch(@RequestParam("search")String search, @RequestParam("searchDomain") String searchDomain, HttpServletResponse response){
-		System.out.println("search");
 		response.addCookie(new Cookie("search", search));
 		response.addCookie(new Cookie("searchDomain", searchDomain));
 		ModelAndView result = new ModelAndView();
@@ -71,7 +75,6 @@ public class PageController {
 	
 	@RequestMapping("/limit")
 	public ModelAndView changeLimit(@RequestParam("limitation") String limit, HttpServletResponse response){
-		System.out.println("limit");
 		response.addCookie(new Cookie("limit", limit));
 		ModelAndView result = new ModelAndView();
 		result.setViewName("redirect:..");
@@ -80,7 +83,6 @@ public class PageController {
 	
 	@RequestMapping("/order")
 	public ModelAndView changeOrder(@RequestParam("order")String order, @RequestParam("asc") String asc, HttpServletResponse response){
-		System.out.println("order");
 		response.addCookie(new Cookie("order", order));
 		response.addCookie(new Cookie("asc", asc));
 		ModelAndView result = new ModelAndView();

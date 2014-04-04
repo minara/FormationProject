@@ -2,6 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
            http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
            http://www.springframework.org/schema/context
@@ -9,13 +10,28 @@
             http://www.springframework.org/schema/mvc 
             http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
 
+<!-- Pour lire les annotaions -->
 	<mvc:annotation-driven />
 	<context:component-scan base-package="com.excilys.computerdatabase.controller"></context:component-scan>
-	
-	<bean
-		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+
+<!--  Pour l'internationalisation -->
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+		<property name="defaultLocale" value="en" />
+	</bean>
+	<mvc:interceptors>
+        <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"
+            p:paramName="language" />
+    </mvc:interceptors>
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="messages" />
+	</bean>
+
+<!-- View resolver -->
+	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">
 		<property name="viewClass"
-            value="org.springframework.web.servlet.view.JstlView" />
+			value="org.springframework.web.servlet.view.JstlView" />
 		<property name="prefix" value="/WEB-INF/" />
 		<property name="suffix" value=".jsp" />
 	</bean>

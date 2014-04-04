@@ -10,8 +10,10 @@
 <link href="/computer-database/css/main.css" rel="stylesheet" media="screen">
 </head>
 <body>
+	<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+	
 	<header class="topbar">
 		<h1 class="fill">
-			<a href="/computer-database/dashboard"> Application - Computer Database </a>
+			<a href="/computer-database/dashboard"><spring:message code="database" text="default text" /> </a>
 		</h1>
 	</header>

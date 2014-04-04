@@ -75,3 +75,8 @@ table.computers .header a {
 .col5 {
 	width: 30%;
 }
+#language{
+	position:absolute;
+	right:25px;
+	font-size:50%;
+}

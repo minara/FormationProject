@@ -66,32 +66,37 @@ public class ComputerController {
 		ModelAndView result = new ModelAndView();
 		result.setViewName("redirect:../dashboard");
 		result.addObject("error", error);
+		result.addObject("action", "welcomeDelete");
 		return result;
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
 	public ModelAndView saveForm(@ModelAttribute("computerDTO") @Valid ComputerDTO computerDTO, BindingResult result){
 		ModelAndView mav = new ModelAndView();
+		Boolean edit=computerDTO.getId()>0;
 		if(result.hasErrors()){
 			mav=showForm();
 			mav.addObject("computerDTO", computerDTO);
-			if(computerDTO.getId()>0)
+			if(edit)
 				mav.setViewName("editComputer");
 		}else{
 			Computer computer=ComputerMapper.fromDTO(computerDTO);
 			boolean success=true;
 			System.out.println(computer.getId());
-			if(computer.getId()>0)
+			if(edit)
 				success=computerService.edit(computer);
 			else success=computerService.add(computer);
 			if(success){
 				mav.setViewName("redirect:dashboard");
+				if(edit)
+					mav.addObject("action", "welcomeEdit");
+				else mav.addObject("action", "welcomeAdd");
 			}else{
 				mav=showForm();
 				mav.addObject("error", true);
 				mav.addObject("errorMsg","An error has occured while treating your request. Please, try again.");
 				mav.addObject("computerDTO", computerDTO);
-				if(computerDTO.getId()>0)
+				if(edit)
 					mav.setViewName("editComputer");
 			}
 		}
