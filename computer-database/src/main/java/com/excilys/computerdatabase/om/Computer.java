@@ -1,13 +1,13 @@
 package com.excilys.computerdatabase.om;
 
-import java.util.Date;
+import org.joda.time.LocalDate;
 
 
 public class Computer {
 	private long     id;
 	private String    name;
-	private FrenchDate introduced;
-	private FrenchDate discontinued;
+	private LocalDate introduced;
+	private LocalDate discontinued;
 	private Company company;
 	
 
@@ -38,13 +38,13 @@ public class Computer {
 			return this;
 		}
 		
-		public Builder introduced(FrenchDate intro) {
+		public Builder introduced(LocalDate intro) {
 			if(intro!=null)
 				this.computer.setIntroduced(intro);
 			return this;
 		}
 		
-		public Builder discontinued(FrenchDate disco) {
+		public Builder discontinued(LocalDate disco) {
 			if(disco!=null)	
 				this.computer.setDiscontinued(disco);
 			return this;
@@ -81,19 +81,19 @@ public class Computer {
 		this.name = name;
 	}
 
-	public Date getIntroduced() {
+	public LocalDate getIntroduced() {
 		return introduced;
 	}
 
-	public void setIntroduced(FrenchDate introduced) {
+	public void setIntroduced(LocalDate introduced) {
 		this.introduced = introduced;
 	}
 
-	public Date getDiscontinued() {
+	public LocalDate getDiscontinued() {
 		return discontinued;
 	}
 
-	public void setDiscontinued(FrenchDate discontinued) {
+	public void setDiscontinued(LocalDate discontinued) {
 		this.discontinued = discontinued;
 	}
 

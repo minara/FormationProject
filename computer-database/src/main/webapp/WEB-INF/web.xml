@@ -3,6 +3,7 @@
 	xmlns="http://java.sun.com/xml/ns/javaee"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	id="WebApp_ID" version="3.0">
+	
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
@@ -20,4 +21,16 @@
 		<servlet-name>computerdatabase</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+
+	<!-- Error page mapping -->
+	<error-page>
+		<error-code>404</error-code>
+		<location>/404</location>
+	</error-page>
+	
+	<error-page>
+		<error-code>500</error-code>
+		<location>/500</location>
+	</error-page>
+
 </web-app>

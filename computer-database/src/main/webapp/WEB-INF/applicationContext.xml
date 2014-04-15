@@ -1,17 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+			http://www.springframework.org/schema/beans 
            http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
             http://www.springframework.org/schema/mvc
 			http://www.springframework.org/schema/mvc/spring-mvc.xsd 
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
-	<!-- - CSS + JS -->
-	<mvc:resources mapping="/image/**" location="/image/" />
-	<mvc:resources mapping="/css/**" location="/css/" />
+	
+	
 	<context:component-scan base-package="com.excilys.computerdatabase.dao"></context:component-scan>
 	<context:component-scan base-package="com.excilys.computerdatabase.service"></context:component-scan>
+	
+	<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl"
+			value="jdbc:mysql://localhost:3306/computer-database-db" />
+		<property name="username" value="jee-cdb" />
+		<property name="password" value="password" />
+		<property name="maxConnectionsPerPartition" value="10" />
+		<property name="minConnectionsPerPartition" value="3" />
+		<property name="partitionCount" value="1" />
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
 </beans>

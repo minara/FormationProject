@@ -12,7 +12,7 @@ public class Page<E>{
 	private boolean asc;
 
 	public Page() {
-		this.count=-1;
+		this.count=0;
 		this.start=-1;
 		this.limit=-1;
 		this.page=-1;
@@ -25,9 +25,9 @@ public class Page<E>{
 		this.errorMsg=null;
 	}
 	
-	public void computePage() throws Exception{
+	public void computePage() {
 		if (count<0)
-			throw new Exception("Incorrect count: no page creation");
+			count=0;
 		if(limit<1)
 			limit=10;
 		

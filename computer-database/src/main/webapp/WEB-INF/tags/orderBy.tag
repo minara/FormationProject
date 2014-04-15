@@ -15,6 +15,6 @@
 <%@ attribute name="style"%>
 
 <p:link call="${call}" order="${type}" asc="${type==order? !asc : true}" 
-img="${type==order?  (asc=='true' ? 'image/downnoir.jpg':'image/upnoir.jpg') : 'image/downgris.jpg'}"
-search="${search}" searchDomain="${searchDomain}" page="${page }" limit="${limit}" delete="${delete }" title="${title}" style="${style}"
+img="${type==order?  (asc=='true' ? '/computer-database/image/downnoir.jpg':'/computer-database/image/upnoir.jpg') : '/computer-database/image/downgris.jpg'}"
+search="${search}" searchDomain="${searchDomain}" page="${page }" limit="${limit}" title="${title}" style="${style}"
 />

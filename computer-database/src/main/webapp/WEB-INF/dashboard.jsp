@@ -24,10 +24,10 @@
 				<option value="1" ${wrapper.searchDomain==1 ? 'selected' : ''}><spring:message code="company" text="default text" /></option>
 			</select>
 		</form>
+		
 		<c:set var="spmsg">
 			<spring:message code="add" text="default text" />
 		</c:set>
-
 		<p:link call="./Computer" title="${spmsg}" class="btn success" id="add" />
 
 	</div>
@@ -67,14 +67,14 @@
 				<tr>
 					<td class="col1"><p:link call="./Computer/editForm"
 							computerId="${computer.id}" title="Edit"
-							img="image/boutonplume.jpg" style="height:25px; width:25px" /></td>
+							img="/computer-database/image/boutonplume.jpg" style="height:25px; width:25px" /></td>
 					<td>${computer.name}</td>
 					<td>${computer.introduced}</td>
 					<td>${computer.discontinued}</td>
 					<td>${computer.company.name}</td>
 					<td><p:link call="./Computer/delete"
 							computerId="${computer.id}" title="Delete"
-							img="image/boutondelete.jpg" style="height:25px; width:25px" /></td>
+							img="/computer-database/image/boutondelete.jpg" style="height:25px; width:25px" /></td>
 				</tr>
 			</c:forEach>
 

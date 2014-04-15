@@ -20,7 +20,6 @@ import com.excilys.computerdatabase.om.Company;
 import com.excilys.computerdatabase.om.Computer;
 import com.excilys.computerdatabase.service.CompanyService;
 import com.excilys.computerdatabase.service.ComputerService;
-import com.excilys.computerdatabase.util.Validator;
 
 @Controller
 @RequestMapping("Computer")
@@ -39,7 +38,6 @@ public class ComputerController {
 		result.setViewName("addComputer");
 		result.addObject("computerDTO", new ComputerDTO());
 		result.addObject("companies", companies);
-		result.addObject("errorResponse", Validator.errorResponse);
 		return result;
 	}
 	

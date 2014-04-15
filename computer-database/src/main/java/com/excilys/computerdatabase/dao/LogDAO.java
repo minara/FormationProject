@@ -12,22 +12,20 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
+
+import com.jolbox.bonecp.BoneCPDataSource;
 
 @Repository
 public class LogDAO {
-	//private final static LogDAO ld=new LogDAO();
 	final Logger logger= LoggerFactory.getLogger(LogDAO.class);
 	@Autowired
-	private DAOFactory factory;
+	private BoneCPDataSource dataSource;
 
 	public LogDAO() {
-		//factory=DAOFactory.FACTORY;
 	}
-	
-	/*public static LogDAO getInstance(){
-		return ld;
-	}*/
 	
 	private void closeConnections(ResultSet rs, Statement stmt,Connection connection){
 		try {
@@ -38,8 +36,8 @@ public class LogDAO {
 			if (stmt != null)
 
 				stmt.close();
-			if(connection!=null&&connection.getAutoCommit())
-				factory.closeConnection();
+			/*if(connection!=null&&connection.getAutoCommit())
+				factory.closeConnection();*/
 			
 		} catch (SQLException e) {
 			logger.debug("SQLException while closing connection to database in ComputerDAO");
@@ -48,12 +46,11 @@ public class LogDAO {
 
 	
 	public void add( String operation, String table, long computerId) {
-		Connection connection= null;
+		Connection connection= DataSourceUtils.getConnection(dataSource);
 		PreparedStatement statement=null;
 		
 		logger.info("New operation "+operation+" on computer "+computerId);
 		try {
-			connection=factory.getConnection();
 			statement=connection.prepareStatement("INSERT INTO log(id, time, operation, table_name, computer_id)"
 					+ "VALUES(0,?,?,?,?);");
 			Date d=new Date();
@@ -67,8 +64,8 @@ public class LogDAO {
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			logger.info("Failed to add operation "+operation+" on computer "+computerId+"to base");
-			DAOFactory.getErrorTL().set(true);
 			e.printStackTrace();
+			throw new DataAccessResourceFailureException("SQL error: "+e.getMessage());
 		}finally{
 			closeConnections(null, statement,connection);
 		}
@@ -76,18 +73,16 @@ public class LogDAO {
 	}
 	
 	public void rollbackTest(){
-		Connection connection= null;
+		Connection connection= DataSourceUtils.getConnection(dataSource);
 		PreparedStatement statement=null;
 		
 		logger.info("Generating rollback through sqlexception");
 		try {
-			connection=factory.getConnection();
 			statement=connection.prepareStatement("SELECT orphan FROM log;");
 			statement.executeQuery();
 		} catch (SQLException e) {
 			logger.info("SQLException occured prepare for rollback");
-			DAOFactory.getErrorTL().set(true);
-			//e.printStackTrace();
+			throw new DataAccessResourceFailureException("SQL error: "+e.getMessage());
 		}finally{
 			closeConnections(null, statement,connection);
 		}
