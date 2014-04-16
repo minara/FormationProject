@@ -27,11 +27,8 @@ public class PageController {
 	public ModelAndView showDashboard(@CookieValue(value="search", defaultValue="") String search, @CookieValue(value="searchDomain", defaultValue="0") String searchDomain, 
 			@CookieValue(value="limit", defaultValue="10") String limit, @CookieValue(value="page", defaultValue="1") String page, 
 			@CookieValue(value="order", defaultValue="NAME") String order, @CookieValue(value="asc", defaultValue="true") String asc,
-			@RequestParam(value="page", required=false) String newPage, HttpServletResponse response,
-			@ModelAttribute("error") String err, @ModelAttribute("action") String action){
-		Boolean error=false;
-		if(!err.isEmpty())
-			error=Boolean.parseBoolean(err);
+			@RequestParam(value="page", required=false) String newPage, HttpServletResponse response, @ModelAttribute("action") String action){
+		
 		String topMessage="welcome";
 		if(!action.isEmpty())
 			topMessage=action;
@@ -46,9 +43,7 @@ public class PageController {
 			System.out.println("Choosen order is impossible");
 		}
 		
-		if (!computerService.search(wrapper)) {
-			error = true;
-		}
+		computerService.search(wrapper);
 		if (wrapper.getPage() > 0) {
 			Cookie cookie=new Cookie("page",Integer.toString(wrapper.getPage()) );
 			response.addCookie(cookie);
@@ -59,8 +54,6 @@ public class PageController {
 		result.setViewName("dashboard");
 		result.addObject("topMessage", topMessage);
 		result.addObject("wrapper", wrapper);
-		result.addObject("error", error);
-		result.addObject("errorMsg","An error has occured while treating your request. Please, try again.");
 		return result;
 	}
 	

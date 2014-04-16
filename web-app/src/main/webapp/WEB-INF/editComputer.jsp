@@ -68,7 +68,6 @@
 			<p:link call="/computer-database/dashboard" title="${spmsg}" class="btn" />
 		</div>
 	</form:form>
-	<script type="text/javascript">if('${error}'==='true'){alert('${errorMsg}');}</script> 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>
 	<script>

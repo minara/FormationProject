@@ -56,14 +56,10 @@ public class ComputerController {
 
 	@RequestMapping("delete")
 	public ModelAndView delete(@RequestParam("computerId") String id){
-		Boolean error=false;
 		long computerId = Long.parseLong(id);
-		if (!computerService.delete(computerId)) {
-			error = true;
-		}
+		computerService.delete(computerId);
 		ModelAndView result = new ModelAndView();
 		result.setViewName("redirect:../dashboard");
-		result.addObject("error", error);
 		result.addObject("action", "welcomeDelete");
 		return result;
 	}
@@ -79,24 +75,14 @@ public class ComputerController {
 				mav.setViewName("editComputer");
 		}else{
 			Computer computer=ComputerMapper.fromDTO(computerDTO);
-			boolean success=true;
 			System.out.println(computer.getId());
 			if(edit)
-				success=computerService.edit(computer);
-			else success=computerService.add(computer);
-			if(success){
-				mav.setViewName("redirect:dashboard");
-				if(edit)
-					mav.addObject("action", "welcomeEdit");
-				else mav.addObject("action", "welcomeAdd");
-			}else{
-				mav=showForm();
-				mav.addObject("error", true);
-				mav.addObject("errorMsg","An error has occured while treating your request. Please, try again.");
-				mav.addObject("computerDTO", computerDTO);
-				if(edit)
-					mav.setViewName("editComputer");
-			}
+				computerService.edit(computer);
+			else computerService.add(computer);
+			mav.setViewName("redirect:dashboard");
+			if(edit)
+				mav.addObject("action", "welcomeEdit");
+			else mav.addObject("action", "welcomeAdd");
 		}
 		return mav;
 	}

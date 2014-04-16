@@ -26,13 +26,11 @@ public class ComputerService {
 	}
 
 	@Transactional(readOnly = true)
-	public boolean search(Page<Computer> wrapper) {// TODO: change all
-													// signatures
+	public void search(Page<Computer> wrapper) {
 		logger.info("Count and search transaction");
 		computerDao.count(wrapper);
 		wrapper.computePage();
 		computerDao.getList(wrapper);
-		return true; // success;
 	}
 
 	@Transactional(readOnly = true)
@@ -44,30 +42,24 @@ public class ComputerService {
 	}
 
 	@Transactional(readOnly = false)
-	public boolean add(Computer computer) {
-		boolean success = true;
+	public void add(Computer computer) {
 		logger.info("Add transaction");
 		computerDao.add(computer);
 		logDao.add("Add", table, computer.getId());
-		return success;
 	}
 
 	@Transactional(readOnly = false)
-	public boolean edit(Computer computer) {
-		boolean success = true;
+	public void edit(Computer computer) {
 		logger.info("Edit transaction");
 		computerDao.edit(computer);
 		logDao.add("Edit", table, computer.getId());
-		return success;
 	}
 
 	@Transactional(readOnly = false)
-	public boolean delete(long computerId) {
-		boolean success = true;
+	public void delete(long computerId) {
 		logger.info("Delete transaction");
 		computerDao.delete(computerId);
 		logDao.add("Delete", table, computerId);
-		return success;
 	}
 
 }

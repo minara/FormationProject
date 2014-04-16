@@ -84,11 +84,6 @@
 	<p:pager pageNumber="${wrapper.page}" lastPage="${wrapper.pageMax}"
 		perPage="${wrapper.limit}" search="${wrapper.name}" />
 
-	<script type="text/javascript">
-		if ('${error}' === 'true') {
-			alert('${errorMsg}');
-		}
-	</script>
 	<script
 		src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script
