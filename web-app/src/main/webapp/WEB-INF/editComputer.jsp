@@ -7,7 +7,7 @@
 <section id="main">
 
 	<h1><spring:message code="edit" text="default text" />
-	<span id="language"> <a href="?language=en&computerId=${computerDTO.id}">English</a>|<a href="?language=fr&computerId=${computerDTO.id}">Français</a></span>
+	<span id="language"> <a href="/computer-database/Computer/editForm?language=en&computerId=${computerDTO.id}">English</a>|<a href="/computer-database/Computer/editForm?language=fr&computerId=${computerDTO.id}">Français</a></span>
 	</h1>
 	
 	<c:set var="nameError">

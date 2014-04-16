@@ -96,7 +96,7 @@
 	<properties>
 		<project.version>3.0.0-SNAPSHOT</project.version>
 		<javax.version>3.1.0</javax.version>
-		<spring.version>4.0.2.RELEASE</spring.version>
+		<spring.version>4.0.3.RELEASE</spring.version>
 		<jstl.version>1.2</jstl.version>
 		<logback.version>1.1.1</logback.version>
 		<sl4j.version>1.7.6</sl4j.version>

@@ -146,7 +146,7 @@
 		errorMessageKey : ""
 		});
 
-		//$.validate();
+		$.validate();
 	</script>
 </section>
 

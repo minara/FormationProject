@@ -28,19 +28,19 @@ public class ComputerController {
 	private CompanyService companyService;
 	@Autowired
 	private ComputerService computerService;
-	
+
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView showForm(){
 		List<Company> companies=new ArrayList<Company>();
 		companies=companyService.getCompanies();
-		
+
 		ModelAndView result = new ModelAndView();
 		result.setViewName("addComputer");
 		result.addObject("computerDTO", new ComputerDTO());
 		result.addObject("companies", companies);
 		return result;
 	}
-	
+
 	@RequestMapping("editForm")
 	public ModelAndView showEditForm(@RequestParam("computerId")String id){
 		ComputerDTO computerDTO=null;
@@ -53,7 +53,7 @@ public class ComputerController {
 		result.setViewName("editComputer");
 		return result;
 	}
-	
+
 	@RequestMapping("delete")
 	public ModelAndView delete(@RequestParam("computerId") String id){
 		Boolean error=false;
@@ -67,18 +67,16 @@ public class ComputerController {
 		result.addObject("action", "welcomeDelete");
 		return result;
 	}
-	
+
 	@RequestMapping(method=RequestMethod.POST)
 	public ModelAndView saveForm(@ModelAttribute("computerDTO") @Valid ComputerDTO computerDTO, BindingResult result){
 		ModelAndView mav = new ModelAndView();
 		Boolean edit=computerDTO.getId()>0;
 		if(result.hasErrors()){
-			if(edit){
-				mav.setViewName("redirect:Computer/editForm?computerId="+Long.toString(computerDTO.getId()));
-			}else{
-				mav=showForm();
-				mav.addObject("computerDTO", computerDTO);
-			}
+			mav=showForm();
+			mav.addObject("computerDTO", computerDTO);
+			if(edit)
+				mav.setViewName("editComputer");
 		}else{
 			Computer computer=ComputerMapper.fromDTO(computerDTO);
 			boolean success=true;
@@ -103,5 +101,5 @@ public class ComputerController {
 		return mav;
 	}
 
-	
+
 }
