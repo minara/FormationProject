@@ -1,5 +1,14 @@
 package com.excilys.computerdatabase.om;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "company")
 public class Company {
 	private long  id;
 	private String name;
@@ -38,6 +47,9 @@ public class Company {
 		return new Builder();
 	}
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "id", unique = true, nullable = false)
 	public long getId() {
 		return id;
 	}
@@ -46,6 +58,7 @@ public class Company {
 		this.id = id;
 	}
 
+	@Column(name = "name")
 	public String getName() {
 		return name;
 	}

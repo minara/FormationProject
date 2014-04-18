@@ -1,23 +1,17 @@
 package com.excilys.computerdatabase.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.hibernate.Query;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.computerdatabase.om.Computer;
 import com.excilys.computerdatabase.om.Page;
-import com.excilys.computerdatabase.rowMapper.ComputerRowMapper;
 import com.jolbox.bonecp.BoneCPDataSource;
 
 @Repository
@@ -26,7 +20,7 @@ public class ComputerDAO {
 	@Autowired
 	private BoneCPDataSource dataSource;
 	@Autowired
-	private JdbcTemplate jdbcTemplate;
+	private SessionFactory sessionFactory;
 
 	public ComputerDAO() {
 	}
@@ -35,47 +29,52 @@ public class ComputerDAO {
 
 		String name = wrapper.getName();
 		int nb = 0;
-		String query = null;
+		StringBuilder hql = new StringBuilder(
+				"SELECT COUNT(ct.id) FROM Computer AS ct");
+		Query query;
 
 		logger.info("Counting computers");
 		if (name == null || name.length() == 0) {
-			nb = jdbcTemplate.queryForObject("SELECT COUNT(id) FROM computer;",
-					Integer.class);
+			query = sessionFactory.getCurrentSession().createQuery(
+					hql.toString());
 		} else {
-			if (wrapper.getSearchDomain() == 1) {
-				query = "SELECT COUNT(ct.id) FROM computer AS ct JOIN company AS cn ON ct.company_id=cn.id Where cn.name LIKE ?;";
-			} else {
-				query = "SELECT COUNT(id) FROM computer Where name LIKE ?;";
-			}
+			if (wrapper.getSearchDomain() == 1)
+				hql.append(" JOIN ct.company AS cn Where cn.name LIKE :search");
+			else 
+				hql.append(" Where ct.name LIKE :search");
+			
 			StringBuilder search = new StringBuilder("%");
 			search.append(name).append("%");
-			nb = jdbcTemplate.queryForObject(query, Integer.class,
-					search.toString());
+			query=sessionFactory.getCurrentSession().createQuery(
+					hql.toString());
+			query.setParameter("search", search.toString());
 		}
+
+		nb = ((Long) query.list().get(0)).intValue();
 		wrapper.setCount(nb);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void getList(Page<Computer> wrapper) {
-		ArrayList<Computer> computers = new ArrayList<Computer>(
-				wrapper.getLimit());
+		List<Computer> computers = new ArrayList<Computer>(wrapper.getLimit());
 		String name = wrapper.getName();
-		int ord = 1;
+		String ord = "ct.id";
 		String asc;
 
 		logger.info("Creating list of computers");
 
 		switch (wrapper.getOrder()) {
 		case NAME:
-			ord = 2;
+			ord = "ct.name";
 			break;
 		case INTRODUCED:
-			ord = 3;
+			ord = "ct.introduced";
 			break;
 		case DISCONTINUED:
-			ord = 4;
+			ord = "ct.discontinued";
 			break;
 		case COMPANY:
-			ord = 6;
+			ord = "cn.name";
 			break;
 		}
 		if (wrapper.isAsc())
@@ -83,109 +82,54 @@ public class ComputerDAO {
 		else
 			asc = "DESC";
 
-		StringBuilder query = new StringBuilder(
-				"SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct ");
+		StringBuilder hql = new StringBuilder("Select ct FROM Computer as ct");
+		Query query;
 		if (name == null || name.length() == 0) {
-			Integer start = null, limit = null;
-			if (wrapper.getStart() >= 0)
-				start = wrapper.getStart();
-			if (wrapper.getLimit() >= 0)
-				limit = wrapper.getLimit();
-			query.append(
-					"LEFT OUTER JOIN company AS cn ON ct.company_id=cn.id ORDER BY ? ")
-					.append(asc).append(" LIMIT ?,?;");
-			computers = (ArrayList<Computer>) jdbcTemplate.query(
-					query.toString(), new ComputerRowMapper(), ord, start,
-					limit);
+			hql.append(" left outer join ct.company as cn ORDER BY ").append(ord + " " + asc);
+			query = sessionFactory.getCurrentSession().createQuery(hql.toString());
+			
 		} else {
 			if (wrapper.getSearchDomain() == 1)
-				query.append(
-						"JOIN company AS cn ON ct.company_id=cn.id WHERE cn.name LIKE ? ORDER BY ? ")
-						.append(asc).append(" LIMIT ?,?;");
+				hql.append(" join ct.company as cn WHERE cn.name LIKE :search ORDER BY ");
 			else
-				query.append(
-						"LEFT OUTER JOIN company AS cn ON ct.company_id=cn.id WHERE ct.name LIKE ? ORDER BY ? ")
-						.append(asc).append(" LIMIT ?,?;");
+				hql.append(" left outer join ct.company as cn WHERE ct.name LIKE :search ORDER BY ");
+			hql.append(ord + " " + asc);
 			StringBuilder search = new StringBuilder("%");
 			search.append(name).append("%");
-			Integer start = null, limit = null;
-			if (wrapper.getStart() >= 0)
-				start = wrapper.getStart();
-			if (wrapper.getLimit() >= 0)
-				limit = wrapper.getLimit();
-			computers = (ArrayList<Computer>) jdbcTemplate.query(
-					query.toString(), new ComputerRowMapper(),
-					search.toString(), ord, start, limit);
+			query = sessionFactory.getCurrentSession().createQuery(hql.toString());
+			query.setParameter("search", search.toString());
 		}
+		query.setFirstResult(wrapper.getStart());
+		query.setMaxResults(wrapper.getLimit());
+		computers = query.list();
 		wrapper.setObjects(computers);
 	}
 
 	public Computer getComputer(long id) {
 		logger.info("Selecting computer n°" + id);
-		return jdbcTemplate
-				.queryForObject(
-						"SELECT ct.id, ct.name, ct.introduced, ct.discontinued, cn.id, cn.name FROM computer AS ct "
-								+ "LEFT OUTER JOIN company AS cn ON ct.company_id=cn.id WHERE ct.id=?;",
-						new ComputerRowMapper(), id);
+		String hql="select ct from Computer as ct left outer join ct.company as cn where ct.id= :num";
+		Query query=sessionFactory.getCurrentSession().createQuery(hql);
+		query.setParameter("num", id);
+		return (Computer) query.list().get(0);
 	}
 
 	public void add(Computer computer) {
 		logger.info("Adding a new computer");
-		final String name = computer.getName();
-		final String intro = computer.getIntroduced() == null?null:computer.getIntroduced().toString();
-		final String disco = computer.getDiscontinued() == null? null : computer.getDiscontinued().toString();
-		final Long companyId = computer.getCompany() == null
-				|| computer.getCompany().getId() < 1 ? null : computer
-				.getCompany().getId();
-
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
-			public PreparedStatement createPreparedStatement(
-					Connection connection) throws SQLException {
-				PreparedStatement statement = connection.prepareStatement(
-						"INSERT INTO computer(id, name, introduced, discontinued, company_id)"
-								+ "VALUES(0,?,?,?,?);", new String[] { "id" });
-				statement.setString(1, name);
-				if (intro == null)
-					statement.setNull(2, Types.TIMESTAMP);
-				else
-					statement.setString(2, intro);
-				if (disco == null)
-					statement.setNull(3, Types.TIMESTAMP);
-				else
-					statement.setString(3, disco);
-				if (companyId == null)
-					statement.setNull(4, Types.INTEGER);
-				else
-					statement.setLong(4, companyId);
-				return statement;
-			}
-		}, keyHolder);
-		computer.setId((Long) keyHolder.getKey());
+		sessionFactory.getCurrentSession().persist(computer);
+		logger.info("Computer id " + computer.getId());
 
 	}
 
 	public void edit(Computer computer) {
 		logger.info("Editing computer n°" + computer.getId());
-		String intro = computer.getIntroduced() == null ? null : computer
-				.getIntroduced().toString();
-		String disco = computer.getDiscontinued() == null ? null : computer
-				.getDiscontinued().toString();
-		Long companyId = computer.getCompany() == null
-				|| computer.getCompany().getId() < 1 ? null : computer
-				.getCompany().getId();
-
-		jdbcTemplate
-				.update("UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?;",
-						computer.getName(), intro, disco, companyId,
-						computer.getId());
+		sessionFactory.getCurrentSession().merge(computer);
 
 	}
 
 	public void delete(long computerId) {
 		logger.info("Deleting computer n°" + computerId);
-		jdbcTemplate.update("DELETE FROM computer WHERE id=?;", computerId);
-
+		sessionFactory.getCurrentSession().delete(
+				Computer.builder().id(computerId).build());
 	}
 
 }

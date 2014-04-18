@@ -13,8 +13,7 @@ import com.excilys.computerdatabase.om.Page;
 
 @Service
 public class ComputerService {
-	private final Logger logger = LoggerFactory
-			.getLogger(ComputerService.class);
+	private final Logger logger = LoggerFactory.getLogger(ComputerService.class);
 	@Autowired
 	private ComputerDAO computerDao;
 	@Autowired

@@ -12,7 +12,7 @@
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
-	
+
 	<context:component-scan base-package="com.excilys.computerdatabase.dao"></context:component-scan>
 
 	<!-- Data Source creation -->
@@ -28,9 +28,11 @@
 		<property name="partitionCount" value="1" />
 	</bean>
 
-	<!-- JdbcTemplate instantiation -->
-	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-    	<property name="dataSource" ref="dataSource"/>
+	<bean id="sessionFactory" 
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan" value="com.excilys.computerdatabase.om" />
 	</bean>
+	
 
 </beans>

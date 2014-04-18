@@ -17,8 +17,8 @@
 	<context:component-scan base-package="com.excilys.computerdatabase.service"></context:component-scan>
 
 	<bean id="transactionManager"
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource"></property>
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
 
 	<tx:annotation-driven transaction-manager="transactionManager" />

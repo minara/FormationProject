@@ -45,7 +45,6 @@ public class ComputerController {
 	public ModelAndView showEditForm(@RequestParam("computerId")String id){
 		ComputerDTO computerDTO=null;
 		Computer computer=computerService.getComputer(Long.parseLong(id));
-		System.out.println(computer);
 		computerDTO=ComputerMapper.toDTO(computer);
 		ModelAndView result = new ModelAndView();
 		result=showForm();

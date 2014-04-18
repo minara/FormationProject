@@ -25,12 +25,9 @@ public class CompanyService {
 
 	@Transactional
 	public List<Company> getCompanies() {
-		List<Company> companies = null;
 
 		logger.info("Get companies transaction");
-		companies = companyDao.getAllCompanies();
-		logDao.add("Search", "company", -1);
-		return companies;
+		return companyDao.getAllCompanies();
 	}
 
 }
