@@ -34,5 +34,4 @@
 		<property name="packagesToScan" value="com.excilys.computerdatabase.om" />
 	</bean>
 	
-
 </beans>

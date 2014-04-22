@@ -22,8 +22,7 @@ public class CompanyDAO {
 	@SuppressWarnings("unchecked")
 	public List<Company> getAllCompanies() {
 		logger.info("Creating full list of companies");
-		List<Company> companies = sessionFactory.getCurrentSession().createQuery("FROM Company").list();
-
+		List<Company> companies = sessionFactory.getCurrentSession().createCriteria(Company.class).list();
 		return companies;
 	}
 

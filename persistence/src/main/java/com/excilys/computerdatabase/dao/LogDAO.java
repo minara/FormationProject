@@ -30,9 +30,4 @@ public class LogDAO {
 		sessionFactory.getCurrentSession().persist(log);
 	}
 
-	public void rollbackTest(){
-		logger.info("Generating rollback through sqlexception");
-		sessionFactory.getCurrentSession().createQuery("SELECT orphan FROM log").list();
-	}
-
 }
