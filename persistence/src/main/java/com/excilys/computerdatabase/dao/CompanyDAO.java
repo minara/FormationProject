@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.computerdatabase.om.Company;
+import com.excilys.computerdatabase.om.QCompany;
+import com.mysema.query.jpa.hibernate.HibernateQuery;
 
 @Repository
 public class CompanyDAO {
@@ -19,10 +21,12 @@ public class CompanyDAO {
 	public CompanyDAO() {
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	public List<Company> getAllCompanies() {
 		logger.info("Creating full list of companies");
-		List<Company> companies = sessionFactory.getCurrentSession().createCriteria(Company.class).list();
+		QCompany company=QCompany.company;
+		HibernateQuery query = new HibernateQuery (sessionFactory.getCurrentSession());
+		List<Company> companies =query.from(company).list(company);
 		return companies;
 	}
 

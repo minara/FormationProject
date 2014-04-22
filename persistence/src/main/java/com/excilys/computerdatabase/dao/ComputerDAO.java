@@ -3,12 +3,8 @@ package com.excilys.computerdatabase.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.Criteria;
+
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.sql.JoinType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +12,8 @@ import org.springframework.stereotype.Repository;
 
 import com.excilys.computerdatabase.om.Computer;
 import com.excilys.computerdatabase.om.Page;
+import com.excilys.computerdatabase.om.QComputer;
+import com.mysema.query.jpa.hibernate.HibernateQuery;
 
 @Repository
 public class ComputerDAO {
@@ -32,72 +30,82 @@ public class ComputerDAO {
 		int nb = 0;
 
 		logger.info("Counting computers");
-		
-		Criteria criteria=sessionFactory.getCurrentSession().createCriteria(Computer.class);
-		criteria.setProjection(Projections.rowCount());
+
+		QComputer computer = QComputer.computer;
+		HibernateQuery query = new HibernateQuery(
+				sessionFactory.getCurrentSession());
+		query.from(computer);
 		if (!(name == null || name.length() == 0)) {
 			StringBuilder search = new StringBuilder("%");
 			search.append(name).append("%");
-			
+
 			if (wrapper.getSearchDomain() == 1)
-				criteria.createAlias("company", "cn").add(Restrictions.like("cn.name", search.toString()));
-			else 
-				criteria.add(Restrictions.like("name", search.toString()));
+				query.innerJoin(computer.company).where(
+						computer.company.name.like(search.toString()));
+			else
+				query.where(computer.name.like(search.toString()));
 		}
 
-		nb = ((Long) criteria.list().get(0)).intValue();
+		nb = ((Long) query.count()).intValue();
 		wrapper.setCount(nb);
 	}
 
-	@SuppressWarnings("unchecked")
 	public void getList(Page<Computer> wrapper) {
 		List<Computer> computers = new ArrayList<Computer>(wrapper.getLimit());
 		String name = wrapper.getName();
-		String ord = "id";
 
 		logger.info("Creating list of computers");
-
-		switch (wrapper.getOrder()) {
-		case NAME:
-			ord = "name";
-			break;
-		case INTRODUCED:
-			ord = "introduced";
-			break;
-		case DISCONTINUED:
-			ord = "discontinued";
-			break;
-		case COMPANY:
-			ord = "cn.name";
-			break;
-		}
-		Criteria criteria=sessionFactory.getCurrentSession().createCriteria(Computer.class);
-		criteria.createAlias("company", "cn",JoinType.LEFT_OUTER_JOIN);
+		QComputer computer = QComputer.computer;
+		HibernateQuery query = new HibernateQuery(
+				sessionFactory.getCurrentSession());
+		query.from(computer).leftJoin(computer.company);
 		if (!(name == null || name.length() == 0)) {
 			StringBuilder search = new StringBuilder("%");
 			search.append(name).append("%");
 			if (wrapper.getSearchDomain() == 1)
-				criteria.add(Restrictions.like("cn.name", search.toString()));
+				query.where(computer.company.name.like(search.toString()));
 			else
-				criteria.add(Restrictions.like("name", search.toString()));
+				query.where(computer.name.like(search.toString()));
 		}
-		if (wrapper.isAsc())
-			criteria.addOrder(Order.asc(ord));
-		else
-			criteria.addOrder(Order.desc(ord));
-		
-		criteria.setFirstResult(wrapper.getStart());
-		criteria.setMaxResults(wrapper.getLimit());
-		computers = criteria.list();
+		switch (wrapper.getOrder()) {
+		case NAME:
+			if (wrapper.isAsc())
+				query.orderBy(computer.name.asc());
+			else
+				query.orderBy(computer.name.desc());
+			break;
+		case INTRODUCED:
+			if (wrapper.isAsc())
+				query.orderBy(computer.introduced.asc());
+			else
+				query.orderBy(computer.introduced.desc());
+			break;
+		case DISCONTINUED:
+			if (wrapper.isAsc())
+				query.orderBy(computer.discontinued.asc());
+			else
+				query.orderBy(computer.discontinued.desc());
+			break;
+		case COMPANY:
+			if (wrapper.isAsc())
+				query.orderBy(computer.company.name.asc());
+			else
+				query.orderBy(computer.company.name.desc());
+			break;
+		default:
+			query.orderBy(computer.id.asc());
+		}
+		computers= query.offset(wrapper.getStart()).limit(wrapper.getLimit()).list(computer);
 		wrapper.setObjects(computers);
 	}
 
 	public Computer getComputer(long id) {
 		logger.info("Selecting computer n°" + id);
-		Criteria criteria=sessionFactory.getCurrentSession().createCriteria(Computer.class);
-		criteria.createAlias("company", "cn",JoinType.LEFT_OUTER_JOIN);
-		criteria.add(Restrictions.idEq(id));
-		return (Computer) criteria.list().get(0);
+		QComputer computer = QComputer.computer;
+		HibernateQuery query = new HibernateQuery(
+				sessionFactory.getCurrentSession());
+		return query.from(computer).leftJoin(computer.company)
+				.where(computer.id.eq(id)).uniqueResult(computer);
 	}
 
 	public void add(Computer computer) {

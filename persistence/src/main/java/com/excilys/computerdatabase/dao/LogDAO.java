@@ -28,6 +28,7 @@ public class LogDAO {
 			log.setComputer(Computer.builder().id(computerId).build());
 		
 		sessionFactory.getCurrentSession().persist(log);
+		
 	}
 
 }
