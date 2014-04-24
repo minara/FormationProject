@@ -30,5 +30,13 @@ public class ErrorController {
 		result.addObject("stackTrace", errors.toString());
 		return result;
 	}
+	
+	@RequestMapping("/403")
+	public ModelAndView show403(){
+		ModelAndView result = new ModelAndView();
+		result.setViewName("error403");
+		return result;
+	}
+	
 
 }

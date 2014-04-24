@@ -15,5 +15,5 @@
            http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
 	<import resource="classpath:service-context.xml" />
-	
+	<import resource="spring-security.xml" />
 </beans>
