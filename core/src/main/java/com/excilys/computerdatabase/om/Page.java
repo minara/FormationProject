@@ -5,11 +5,12 @@ import java.util.List;
 import com.excilys.computerdatabase.util.Order;
 
 public class Page<E>{
-	private int start, limit, count, searchDomain, page, pageMax, newPage;
+	private int start, limit, searchDomain, page, pageMax; 
 	private String name, errorMsg;
 	private List<E> objects;
 	private Order order;
 	private boolean asc;
+	private long count;
 
 	public Page() {
 		this.count=0;
@@ -17,7 +18,6 @@ public class Page<E>{
 		this.limit=-1;
 		this.page=-1;
 		this.pageMax=-1;
-		this.newPage=-1;
 		this.name=null;
 		this.searchDomain=0;
 		this.order=Order.NAME;
@@ -25,30 +25,6 @@ public class Page<E>{
 		this.errorMsg=null;
 	}
 	
-	public void computePage() {
-		if (count<0)
-			count=0;
-		if(limit<1)
-			limit=10;
-		
-		pageMax=count/limit;
-		if(count>pageMax*limit||count==0)
-			pageMax++;
-		
-		if(newPage>0){
-			if(newPage<pageMax+1)
-				page=newPage;
-			else page=pageMax;
-		}else{
-			if(page<1)
-				page=1;
-			else if(page>pageMax)
-				page=pageMax;
-		}
-		
-		start=limit*(page-1);
-	}
-
 	public static class Builder<E>{
 		Page<E> wrapper;
 				
@@ -68,7 +44,7 @@ public class Page<E>{
 			return this;
 		}
 		
-		public Builder<E> count(int count) {
+		public Builder<E> count(long count) {
 			if(count>=0)
 				this.wrapper.setCount(count);
 			return this;
@@ -89,12 +65,6 @@ public class Page<E>{
 		public Builder<E> pageMax(int pageMax) {
 			if(pageMax>0)
 				this.wrapper.setPageMax(pageMax);
-			return this;
-		}
-		
-		public Builder<E> newPage(int page) {
-			if(page>=0)
-				this.wrapper.setNewPage(page);
 			return this;
 		}
 		
@@ -139,15 +109,7 @@ public class Page<E>{
 	public void setErrorMsg(String errorMsg) {
 		this.errorMsg = errorMsg;
 	}
-
-	public int getNewPage() {
-		return newPage;
-	}
-
-	public void setNewPage(int newPage) {
-		this.newPage = newPage;
-	}
-
+	
 	public int getPage() {
 		return page;
 	}
@@ -183,11 +145,11 @@ public class Page<E>{
 		this.asc = asc;
 	}
 
-	public int getCount() {
+	public long getCount() {
 		return count;
 	}
 
-	public void setCount(int count) {
+	public void setCount(long count) {
 		this.count = count;
 	}
 

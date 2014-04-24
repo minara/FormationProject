@@ -7,9 +7,9 @@
 
 <div>
 		<a class="btn small" href="./dashboard?page=1"><spring:message code="first" text="default text" /></a>
-		<a class="btn small" href="./dashboard?page=${pageNumber-1}"><spring:message code="prec" text="default text" /></a>
+		<a class="btn small" href="./dashboard?page=${pageNumber-1<1? 1 : pageNumber-1 }"><spring:message code="prec" text="default text" /></a>
 		<span>${pageNumber}/${lastPage}</span>
-		<a class="btn small" href="./dashboard?page=${pageNumber+1}"><spring:message code="next" text="default text" /></a>
+		<a class="btn small" href="./dashboard?page=${pageNumber+1>lastPage? lastPage : pageNumber+1}"><spring:message code="next" text="default text" /></a>
 		<a class="btn small" href="./dashboard?page=${lastPage}"><spring:message code="last" text="default text" /></a>
 		<form action="./dashboard/limit" method="get" >
 			<select name="limitation">

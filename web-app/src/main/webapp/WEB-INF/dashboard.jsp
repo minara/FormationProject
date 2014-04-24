@@ -17,7 +17,8 @@
 			<input type="search" id="searchbox" name="search"
 				value="${wrapper.name}" placeholder="<spring:message code="search" text="default text" />"
 				data-validation="alphanumeric" data-validation-allowing=" -_/."
-				data-validation-optional="true"> <input type="submit"
+				data-validation-optional="true"> 
+			<input type="submit"
 				id="searchsubmit" value="<spring:message code="filter" text="default text" />" class="btn primary">
 			<select name="searchDomain">
 				<option value="0" ${wrapper.searchDomain==0 ? 'selected' : ''}><spring:message code="computer" text="default text" /></option>

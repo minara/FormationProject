@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
 	xsi:schemaLocation="
-		http://www.springframework.org/schema/tx
-		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+			 http://www.springframework.org/schema/data/jpa
+    		http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
 			http://www.springframework.org/schema/beans 
            http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
             http://www.springframework.org/schema/mvc
 			http://www.springframework.org/schema/mvc/spring-mvc.xsd 
            http://www.springframework.org/schema/context
-           http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+           http://www.springframework.org/schema/context/spring-context-4.0.xsd
+          ">
 
 
 	<context:component-scan base-package="com.excilys.computerdatabase.dao"></context:component-scan>
@@ -27,11 +28,16 @@
 		<property name="minConnectionsPerPartition" value="3" />
 		<property name="partitionCount" value="1" />
 	</bean>
-
-	<bean id="sessionFactory" 
-		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="packagesToScan" value="com.excilys.computerdatabase.om" />
-	</bean>
 	
+	 <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <!--<property name="persistenceUnitName" value="computerDatabasePU"/>  -->
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="com.excilys.computerdatabase.om"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+        </property>
+    </bean>
+	<jpa:repositories base-package="com.excilys.computerdatabase.dao"> 
+	</jpa:repositories>
+
 </beans>

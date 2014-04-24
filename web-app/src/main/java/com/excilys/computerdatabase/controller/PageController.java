@@ -4,6 +4,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -36,19 +39,23 @@ public class PageController {
 		Page<Computer> wrapper= cb.name(search).searchDomain(Integer.parseInt(searchDomain)).limit(Integer.parseInt(limit))
 				.page(Integer.parseInt(page)).asc(Boolean.parseBoolean(asc)).build();
 		if(newPage!=null&&newPage!="")
-			wrapper.setNewPage(Integer.parseInt(newPage));
+			wrapper.setPage(Integer.parseInt(newPage));
 		try {
 			wrapper.setOrder(Order.getOrder(order));
 		} catch (Exception e) {
 			System.out.println("Choosen order is impossible");
 		}
-		
-		computerService.search(wrapper);
 		if (wrapper.getPage() > 0) {
 			Cookie cookie=new Cookie("page",Integer.toString(wrapper.getPage()) );
 			response.addCookie(cookie);
 		}
-
+		
+		Sort sort= selectSort(wrapper.getOrder(), wrapper.isAsc());
+		Pageable pageable= new PageRequest(wrapper.getPage()-1, wrapper.getLimit(), sort);
+		org.springframework.data.domain.Page<Computer> p=computerService.search(wrapper.getName(), wrapper.getSearchDomain(), pageable);
+		wrapper.setCount(p.getTotalElements());
+		wrapper.setPageMax(p.getTotalPages());
+		wrapper.setObjects(p.getContent());
 		
 		ModelAndView result = new ModelAndView();
 		result.setViewName("dashboard");
@@ -57,10 +64,46 @@ public class PageController {
 		return result;
 	}
 	
+	private Sort selectSort(Order order, boolean asc) {
+		Sort sort=null;
+		switch(order){
+		case COMPANY:
+			if(asc)
+				sort= new Sort(new Sort.Order(Sort.Direction.ASC, "company.name"),new Sort.Order(Sort.Direction.ASC, "name"));
+			else 
+				sort= new Sort(new Sort.Order(Sort.Direction.DESC, "company.name"),new Sort.Order(Sort.Direction.ASC, "name"));
+			break;
+		case DISCONTINUED:
+			if(asc)
+				sort= new Sort(new Sort.Order(Sort.Direction.ASC, "discontinued"),new Sort.Order(Sort.Direction.ASC, "name"));
+			else 
+				sort= new Sort(new Sort.Order(Sort.Direction.DESC,"discontinued"),new Sort.Order(Sort.Direction.ASC, "name"));
+			break;
+		case INTRODUCED:
+			if(asc)
+				sort= new Sort(new Sort.Order(Sort.Direction.ASC, "introduced"),new Sort.Order(Sort.Direction.ASC, "name"));
+			else 
+				sort= new Sort(new Sort.Order(Sort.Direction.DESC,"introduced"),new Sort.Order(Sort.Direction.ASC, "name"));
+			break;
+		case NAME:
+			if(asc)
+				sort= new Sort(Sort.Direction.ASC, "name");
+			else 
+				sort= new Sort(Sort.Direction.DESC,"name");
+			break;
+		default:
+			break;
+		
+		}
+		
+		return sort;
+	}
+
 	@RequestMapping("/search")
 	public ModelAndView changeSearch(@RequestParam("search")String search, @RequestParam("searchDomain") String searchDomain, HttpServletResponse response){
 		response.addCookie(new Cookie("search", search));
 		response.addCookie(new Cookie("searchDomain", searchDomain));
+		response.addCookie(new Cookie("page", "1"));
 		ModelAndView result = new ModelAndView();
 		result.setViewName("redirect:..");
 		return result;
@@ -69,6 +112,7 @@ public class PageController {
 	@RequestMapping("/limit")
 	public ModelAndView changeLimit(@RequestParam("limitation") String limit, HttpServletResponse response){
 		response.addCookie(new Cookie("limit", limit));
+		response.addCookie(new Cookie("page", "1"));
 		ModelAndView result = new ModelAndView();
 		result.setViewName("redirect:..");
 		return result;
