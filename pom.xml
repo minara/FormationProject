@@ -11,6 +11,7 @@
 		<module>persistence</module>
 		<module>service</module>
 		<module>web-app</module>
+		<module>webservices</module>
 	</modules>
 	<build>
 		<plugins>
@@ -138,6 +139,13 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+
+			<!-- JAX-WS -->
+			<dependency>
+				<groupId>org.jvnet.jax-ws-commons.spring</groupId>
+				<artifactId>jaxws-spring</artifactId>
+				<version>${jax-ws.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -155,6 +163,7 @@
 		<hibernate.version>4.3.4.Final</hibernate.version>
 		<spring-data.version>1.5.2.RELEASE</spring-data.version>
 		<spring-security.version>3.2.3.RELEASE</spring-security.version>
+		<jax-ws.version>1.9</jax-ws.version>
 	</properties>
 
 </project>

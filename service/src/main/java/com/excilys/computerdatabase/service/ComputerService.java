@@ -1,5 +1,7 @@
 package com.excilys.computerdatabase.service;
 
+import java.util.List;
+
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,6 +83,10 @@ public class ComputerService {
 				.tableName(table)
 				.computer(Computer.builder().id(computerId).build()).build();
 		logDao.save(log);
+	}
+
+	public List<Computer> findAll() {
+		return computerDao.findAll();
 	}
 
 }
