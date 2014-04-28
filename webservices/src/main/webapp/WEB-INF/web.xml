@@ -6,29 +6,30 @@
 		id="WebApp_ID" version="3.0">
  
 	<display-name>Formation Project Web Application</display-name>
- 
-	<servlet>
-    	        <servlet-name>webservice-servlet</servlet-name>
-    	       <servlet-class>
-    		          com.sun.xml.ws.transport.http.servlet.WSSpringServlet
-    	        </servlet-class>
-  	</servlet>
- 
-	<servlet-mapping>
-                <servlet-name>webservice-servlet</servlet-name>
-                <url-pattern>/web</url-pattern>
-         </servlet-mapping>
- 
-         <!-- Register Spring Listener -->
-  	<listener>
+	 <!-- Register Spring Listener -->
+	<listener>
     	        <listener-class>
     		     org.springframework.web.context.ContextLoaderListener
     	        </listener-class>
   	</listener>
- 
+
  		<context-param>
 			<param-name>contextConfigLocation</param-name>
 			<param-value>/WEB-INF/applicationContext.xml</param-value>
 		</context-param>
-
+	
+ 	<!-- JAX-RS utils -->
+	<servlet>
+    	        <servlet-name>webservice-servlet</servlet-name>
+    	       	<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+				<load-on-startup>1</load-on-startup>
+  	</servlet>
+ 
+	<servlet-mapping>
+                <servlet-name>webservice-servlet</servlet-name>	
+                <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+ 
+         
+  	
 </web-app>
