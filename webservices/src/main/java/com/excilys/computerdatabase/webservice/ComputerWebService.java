@@ -21,7 +21,7 @@ public class ComputerWebService {
 	private ComputerService computerService;
 
 	@GET
-	@Produces("application/xml")
+	@Produces(MediaType.APPLICATION_JSON)
 	public List<Computer> findAll() {
 		return computerService.findAll();
 	}

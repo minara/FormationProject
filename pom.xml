@@ -146,6 +146,13 @@
 				<artifactId>cxf-rt-frontend-jaxrs</artifactId>
 				<version>${cxf-jaxrs.version}</version>
 			</dependency>
+
+			<!-- Jackson for JSON format with Jax-rs -->
+			<dependency>
+				<groupId>org.codehaus.jackson</groupId>
+				<artifactId>jackson-jaxrs</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -163,8 +170,8 @@
 		<hibernate.version>4.3.4.Final</hibernate.version>
 		<spring-data.version>1.5.2.RELEASE</spring-data.version>
 		<spring-security.version>3.2.3.RELEASE</spring-security.version>
-		<!-- <jax-ws.version>1.9</jax-ws.version> -->
 		<cxf-jaxrs.version>2.7.11</cxf-jaxrs.version>
+		<jackson.version>1.9.13</jackson.version>
 	</properties>
 
 </project>

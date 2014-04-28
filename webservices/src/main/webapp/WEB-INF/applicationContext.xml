@@ -17,6 +17,9 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
 		<jaxrs:serviceBeans>
 			<bean class="com.excilys.computerdatabase.webservice.ComputerWebService" />
 		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
+		</jaxrs:providers>
 	</jaxrs:server>
 
 	<import resource="classpath:service-context.xml" />
