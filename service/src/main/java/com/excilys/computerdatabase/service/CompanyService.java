@@ -21,7 +21,7 @@ public class CompanyService {
 	public CompanyService() {
 	}
 
-	@Transactional
+	@Transactional(readOnly=true)
 	public List<Company> getCompanies() {
 
 		logger.info("Get companies transaction");

@@ -10,11 +10,6 @@
 	<artifactId>core</artifactId>
 
 	<dependencies>
-		<!-- Hibernate Validator -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-		</dependency>
 
 		<!-- Joda-Time -->
 		<dependency>

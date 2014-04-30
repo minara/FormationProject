@@ -5,7 +5,7 @@ import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.excilys.computerdatabase.util.PastDate;
+import com.excilys.computerdatabase.validation.PastDate;
 
 
 public class ComputerDTO {

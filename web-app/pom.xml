@@ -9,37 +9,44 @@
 	<groupId>com.excilys.computer-db.web-app</groupId>
 	<artifactId>web-app</artifactId>
 	<packaging>war</packaging>
-	
+	<properties>
+	<m2eclipse.wtp.contextRoot>/computer-database</m2eclipse.wtp.contextRoot>
+	</properties>
 	<dependencies>
-	<!-- Intern dependencies -->
-		<dependency>
+		<!-- Intern dependencies -->
+		 <dependency>
 			<groupId>com.excilys.computer-db.service</groupId>
 			<artifactId>service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.excilys.computer-db.binding</groupId>
 			<artifactId>binding</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<!-- JSTL dependency -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 		<!-- Spring dependencies -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
 		</dependency>
 
 		<!-- Hibernate Validator -->
@@ -48,21 +55,23 @@
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 
-		<!-- Joda-Time -->
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-		</dependency>
-		
 		<!-- Spring Security -->
-			  <dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-web</artifactId>
-			</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+		</dependency>
 
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-config</artifactId>
-			</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
+			</plugin>
+		</plugins>
+	</build>
 </project>

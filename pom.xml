@@ -23,11 +23,6 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.3</version>
-			</plugin>
-
 		</plugins>
 	</build>
 	<dependencyManagement>
@@ -37,53 +32,86 @@
 			<dependency>
 				<groupId>com.jolbox</groupId>
 				<artifactId>bonecp</artifactId>
-				<version>${bonecp.version}</version>
+				<version>${bonecpVersion}</version>
 			</dependency>
 
 			<!-- Log dependencies -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>${sl4j.version}</version>
+				<version>${sl4jVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
-				<version>${logback.version}</version>
-				<scope>runtime</scope>
+				<version>${logbackVersion}</version>
 			</dependency>
 
 			<!-- JSTL dependency -->
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
-				<version>${javax.version}</version>
-				<scope>provided</scope>
+				<version>${javaxVersion}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>jstl</artifactId>
-				<version>${jstl.version}</version>
+				<version>${jstlVersion}</version>
 			</dependency>
 
 			<!-- Spring dependencies -->
 			<dependency>
 				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
+				<version>${springVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>${springVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+				<version>${springVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${springVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jdbc</artifactId>
+				<version>${springVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-tx</artifactId>
+				<version>${springVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
 				<artifactId>spring-webmvc</artifactId>
-				<version>${spring.version}</version>
+				<version>${springVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>${springVersion}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-orm</artifactId>
-				<version>${spring.version}</version>
+				<version>${springVersion}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-jpa</artifactId>
-				<version>${spring-data.version}</version>
+				<version>${springDataVersion}</version>
 			</dependency>
 
 
@@ -91,28 +119,28 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-validator</artifactId>
-				<version>${hibernate-validator.version}</version>
+				<version>${hibernateValidatorVersion}</version>
 			</dependency>
 
 			<!-- Joda-Time -->
 			<dependency>
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
-				<version>${joda-time.version}</version>
+				<version>${jodaTimeVersion}</version>
 			</dependency>
 
 			<!-- Joda-Time for Hibernate -->
 			<dependency>
 				<groupId>org.jadira.usertype</groupId>
 				<artifactId>usertype.jodatime</artifactId>
-				<version>${jadira.version}</version>
+				<version>${jadiraVersion}</version>
 			</dependency>
 
 			<!-- Hibernate -->
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
-				<version>${hibernate.version}</version>
+				<version>${hibernateVersion}</version>
 			</dependency>
 
 			<dependency>
@@ -125,13 +153,13 @@
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-web</artifactId>
-				<version>${spring-security.version}</version>
+				<version>${spring-securityVersion}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-config</artifactId>
-				<version>${spring-security.version}</version>
+				<version>${spring-securityVersion}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.springframework</groupId>
@@ -144,34 +172,34 @@
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-frontend-jaxrs</artifactId>
-				<version>${cxf-jaxrs.version}</version>
+				<version>${cxfJaxrsVersion}</version>
 			</dependency>
 
 			<!-- Jackson for JSON format with Jax-rs -->
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
 				<artifactId>jackson-jaxrs</artifactId>
-				<version>${jackson.version}</version>
+				<version>${jacksonVersion}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
 	<properties>
-		<project.version>3.6.0-SNAPSHOT</project.version>
-		<javax.version>3.1.0</javax.version>
-		<spring.version>4.0.3.RELEASE</spring.version>
-		<jstl.version>1.2</jstl.version>
-		<logback.version>1.1.1</logback.version>
-		<sl4j.version>1.7.6</sl4j.version>
-		<bonecp.version>0.7.1.RELEASE</bonecp.version>
-		<hibernate-validator.version>5.1.0.Final</hibernate-validator.version>
-		<joda-time.version>2.3</joda-time.version>
-		<jadira.version>2.0.1</jadira.version>
-		<hibernate.version>4.3.4.Final</hibernate.version>
-		<spring-data.version>1.5.2.RELEASE</spring-data.version>
-		<spring-security.version>3.2.3.RELEASE</spring-security.version>
-		<cxf-jaxrs.version>2.7.11</cxf-jaxrs.version>
-		<jackson.version>1.9.13</jackson.version>
+		<projectVersion>3.6.0-SNAPSHOT</projectVersion>
+		<javaxVersion>3.1.0</javaxVersion>
+		<springVersion>4.0.3.RELEASE</springVersion>
+		<jstlVersion>1.2</jstlVersion>
+		<logbackVersion>1.1.1</logbackVersion>
+		<sl4jVersion>1.7.6</sl4jVersion>
+		<bonecpVersion>0.7.1.RELEASE</bonecpVersion>
+		<hibernateValidatorVersion>5.1.0.Final</hibernateValidatorVersion>
+		<jodaTimeVersion>2.3</jodaTimeVersion>
+		<jadiraVersion>2.0.1</jadiraVersion>
+		<hibernateVersion>4.3.4.Final</hibernateVersion>
+		<springDataVersion>1.5.2.RELEASE</springDataVersion>
+		<spring-securityVersion>3.2.3.RELEASE</spring-securityVersion>
+		<cxfJaxrsVersion>2.7.11</cxfJaxrsVersion>
+		<jacksonVersion>1.9.13</jacksonVersion>
 	</properties>
 
 </project>
